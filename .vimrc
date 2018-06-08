@@ -40,10 +40,6 @@ set hlsearch
 " Makes search act like search in modern browsers
 set incsearch
 
-" Highlight characters in a line past column 120
-highlight OverLength ctermbg=red ctermfg=white guibg=#592929
-match OverLength /\%121v.\+/
-
 syntax enable           " enable syntax processing
 
 " move vertically by visual line
@@ -53,7 +49,6 @@ nnoremap k gk
 " highlight last inserted text
 nnoremap gV `[v`]
 
-let mapleader=","       " leader is comma
 set showcmd             " show the command
 
 autocmd BufWritePre *.py :%s/\s\+$//e
