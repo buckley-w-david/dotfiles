@@ -52,3 +52,5 @@ nnoremap gV `[v`]
 set showcmd             " show the command
 
 autocmd BufWritePre *.py :%s/\s\+$//e
+
+execute pathogen#infect() " start pathogen
