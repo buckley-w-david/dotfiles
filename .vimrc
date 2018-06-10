@@ -71,4 +71,7 @@ Plugin 'tpope/vim-repeat'
 Plugin 'plasticboy/vim-markdown'
 Plugin 'elzr/vim-json'
 Plugin 'w0rp/ale'
+Plugin 'elixir-editors/vim-elixir'
+Plugin 'chrisbra/csv.vim'
+Plugin 'plytophogy/vim-virtualenv'
 call vundle#end()
