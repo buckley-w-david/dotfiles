@@ -74,4 +74,7 @@ Plugin 'w0rp/ale'
 Plugin 'elixir-editors/vim-elixir'
 Plugin 'chrisbra/csv.vim'
 Plugin 'plytophogy/vim-virtualenv'
+Plugin 'terryma/vim-multiple-cursors'
+Plugin 'tpope/vim-sensible'
+Plugin 'tpope/vim-dispatch'
 call vundle#end()
