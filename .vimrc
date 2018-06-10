@@ -70,5 +70,5 @@ Plugin 'tpope/vim-surround'
 Plugin 'tpope/vim-repeat'
 Plugin 'plasticboy/vim-markdown'
 Plugin 'elzr/vim-json'
-
+Plugin 'w0rp/ale'
 call vundle#end()
