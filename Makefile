@@ -8,5 +8,5 @@ all: .vim .bashrc
 	vim +PluginInstall +qall
 
 .bashrc:
-	link .bashrc ~/.bashrc_extend
-	echo "source .bashrc_extend" >> ~/.bashrc
+	link .bashrc.common ~/.bashrc.extend
+	echo "source .bashrc.extend" >> ~/.bashrc
