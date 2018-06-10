@@ -53,4 +53,22 @@ set showcmd             " show the command
 
 autocmd BufWritePre *.py :%s/\s\+$//e
 
-execute pathogen#infect() " start pathogen
+""""""""""""""""""""""""
+" Plugin Configuration "
+""""""""""""""""""""""""
+set rtp+=~/.vim/bundle/Vundle.vim
+call vundle#begin()
+Plugin 'VundleVim/Vundle.vim'
+Plugin 'vim-airline/vim-airline'
+Plugin 'editorconfig/editorconfig'
+Plugin 'tpope/vim-commentary'
+Plugin 'tpope/vim-fugitive'
+Plugin 'tpope/vim-git'
+Plugin 'michaeljsmith/vim-indent-object'
+Plugin 'kana/vim-textobj-user'
+Plugin 'tpope/vim-surround'
+Plugin 'tpope/vim-repeat'
+Plugin 'plasticboy/vim-markdown'
+Plugin 'elzr/vim-json'
+
+call vundle#end()
