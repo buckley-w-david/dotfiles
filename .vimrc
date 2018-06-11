@@ -82,3 +82,6 @@ call vundle#end()
 " Ale
 nmap <silent> <C-k> <Plug>(ale_previous_wrap)
 nmap <silent> <C-j> <Plug>(ale_next_wrap)
+
+" vim-markdown
+let g:vim_markdown_folding_disabled = 1
