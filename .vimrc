@@ -78,3 +78,7 @@ Plugin 'terryma/vim-multiple-cursors'
 Plugin 'tpope/vim-sensible'
 Plugin 'tpope/vim-dispatch'
 call vundle#end()
+
+" Ale
+nmap <silent> <C-k> <Plug>(ale_previous_wrap)
+nmap <silent> <C-j> <Plug>(ale_next_wrap)

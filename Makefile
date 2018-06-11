@@ -1,12 +1,18 @@
-.PHONY: .vim .bashrc
+.PHONY: .vimrc .bashrc .tmux.conf
 
-all: .vim .bashrc
+all: .vimrc .bashrc .tmux.conf
 
-.vim:
-	link .vimrc ~/.vimrc
+DIR = $(dir $(realpath $(firstword $(MAKEFILE_LIST))))
+
+.vimrc:
+	ln -sfn "$(DIR)/.vimrc" ~/.vimrc
+	rm -rf ~/.vim/bundle/Vundle.vim
 	git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim
 	vim +PluginInstall +qall
 
 .bashrc:
-	link .bashrc.common ~/.bashrc.common
+	ln -sfn "$(DIR)/.bashrc.common" ~/.bashrc.common
 	echo "source .bashrc.common" >> ~/.bashrc
+
+.tmux.conf:
+	ln -sfn "$(DIR)/.tmux.conf" ~/.tmux.conf
