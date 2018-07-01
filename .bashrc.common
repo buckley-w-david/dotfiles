@@ -1,5 +1,5 @@
 ## Git Aliases
-alias gpo="git branch | awk '/^\*/{print $NF}' | xargs git push origin"
+alias gpo="git branch | grep \* | cut -c3- | xargs git push origin"
 
 alias gs='git status '
 alias ga='git add '
