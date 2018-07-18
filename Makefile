@@ -16,3 +16,6 @@ DIR = $(dir $(realpath $(firstword $(MAKEFILE_LIST))))
 
 .tmux.conf:
 	ln -sfn "$(DIR)/.tmux.conf" ~/.tmux.conf
+
+.editorconfig:
+	ln -sfn "$(DIR)/.editorconfig" ~/.editorconfig
