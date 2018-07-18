@@ -33,7 +33,6 @@ set showmatch           " highlight matching [{()}]
 " turn off search highlight
 nnoremap <leader><space> :nohlsearch<CR>
 
-
 " Highlight search results
 set hlsearch
 
@@ -51,7 +50,10 @@ nnoremap gV `[v`]
 
 set showcmd             " show the command
 
+" Before writing the buffer in .py files
+" remove trailing whitespace
 autocmd BufWritePre *.py :%s/\s\+$//e
+
 
 """"""""""""""""""""""""
 " Plugin Configuration "
@@ -77,6 +79,8 @@ Plugin 'plytophogy/vim-virtualenv'
 Plugin 'terryma/vim-multiple-cursors'
 Plugin 'tpope/vim-sensible'
 Plugin 'tpope/vim-dispatch'
+Plugin 'ambv/black'
+Plugin 'fatih/vim-go'
 call vundle#end()
 
 " Ale
@@ -85,3 +89,6 @@ nmap <silent> <C-j> <Plug>(ale_next_wrap)
 
 " vim-markdown
 let g:vim_markdown_folding_disabled = 1
+
+" editorconfig + vim-fugitive
+let g:EditorConfig_exclude_patterns = ['fugitive://.*']
