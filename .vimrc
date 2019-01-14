@@ -39,6 +39,11 @@ set hlsearch
 " Makes search act like search in modern browsers
 set incsearch
 
+" Makes splits happen in the direction I expect
+set splitbelow
+set splitright
+
+
 syntax enable           " enable syntax processing
 
 " move vertically by visual line
@@ -53,6 +58,13 @@ set showcmd             " show the command
 " Before writing the buffer in .py files
 " remove trailing whitespace
 autocmd BufWritePre *.py :%s/\s\+$//e
+
+command W w
+command Q q
+command WQ wq
+command Wq wq
+
+command GST terminal ++close gst % -
 
 
 """"""""""""""""""""""""
@@ -79,8 +91,10 @@ Plugin 'plytophogy/vim-virtualenv'
 Plugin 'terryma/vim-multiple-cursors'
 Plugin 'tpope/vim-sensible'
 Plugin 'tpope/vim-dispatch'
-Plugin 'ambv/black'
+" Plugin 'ambv/black'
 Plugin 'fatih/vim-go'
+Plugin 'prettier/vim-prettier'
+Plugin 'vim-scripts/st.vim'
 call vundle#end()
 
 " Ale
@@ -92,3 +106,7 @@ let g:vim_markdown_folding_disabled = 1
 
 " editorconfig + vim-fugitive
 let g:EditorConfig_exclude_patterns = ['fugitive://.*']
+
+" vim-prettier
+let g:prettier#config#single_quote = 'true'
+let g:prettier#config#semi = 'false'

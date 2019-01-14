@@ -1,6 +1,6 @@
 .PHONY: .vimrc .bashrc .tmux.conf
 
-all: .vimrc .bashrc .tmux.conf
+all: .vimrc .bashrc .tmux.conf .editorconfig
 
 DIR = $(dir $(realpath $(firstword $(MAKEFILE_LIST))))
 
