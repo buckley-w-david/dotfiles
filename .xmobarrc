@@ -10,8 +10,9 @@ Config { font = "-*-Fixed-Bold-R-Normal-*-13-*-*-*-*-*-*-*"
                     , Run StdinReader
                     , Run Com "/home/david/rss.sh" [] "rss" 10
                     , Run Com "/home/david/updates.sh" [] "pacman" 18000
+                    , Run Com "/home/david/screensaver.sh" [] "screensaver" 10
                     ]
        , sepChar = "%"
        , alignSep = "}{"
-       , template = "%StdinReader% | Articles: %rss% | Updates: %pacman%}{ %cpu% | %memory% * %swap%    <fc=#ee9a00>%date%</fc> | %CWSN%"
+       , template = "%StdinReader% | Articles: %rss% | Updates: %pacman%}{ Screensaver: %screensaver% | %cpu% | %memory% * %swap%    <fc=#ee9a00>%date%</fc> | %CWSN%"
        }
