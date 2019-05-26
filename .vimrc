@@ -95,6 +95,8 @@ Plugin 'tpope/vim-dispatch'
 Plugin 'fatih/vim-go'
 Plugin 'prettier/vim-prettier'
 Plugin 'vim-scripts/st.vim'
+Plugin 'francoiscabrol/ranger.vim'
+Plugin 'xuhdev/vim-latex-live-preview'
 call vundle#end()
 
 " Ale

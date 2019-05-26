@@ -1,6 +1,6 @@
-.PHONY: .vimrc .bashrc .tmux.conf
+.PHONY: .vimrc .bashrc .tmux.conf .editorconfig xmonad.hs .xmobarrc
 
-all: .vimrc .bashrc .tmux.conf .editorconfig
+all: .vimrc .bashrc .tmux.conf .editorconfig xmonad.hs .xmobarrc
 
 DIR = $(dir $(realpath $(firstword $(MAKEFILE_LIST))))
 
@@ -19,3 +19,13 @@ DIR = $(dir $(realpath $(firstword $(MAKEFILE_LIST))))
 
 .editorconfig:
 	ln -sfn "$(DIR)/.editorconfig" ~/.editorconfig
+
+xmonad.hs:
+	mkdir -p ~/.xmonad
+	ln -sfn "$(DIR)/xmonad.hs" ~/.xmonad/xmonad.hs
+
+.xmobarrc:
+	ln -sfn "$(DIR)/.xmobarrc" ~/.xmobarrc
+
+test:
+	echo $(DIR)
