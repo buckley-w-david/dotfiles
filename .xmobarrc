@@ -1,18 +1,29 @@
-Config { font = "-*-Fixed-Bold-R-Normal-*-13-*-*-*-*-*-*-*"
+Config { font = "-*-Fixed-Bold-R-Normal-*-12-*-*-*-*-*-*-*"
        , bgColor = "black"
        , fgColor = "grey"
        , position = TopW L 90
-       , commands = [ Run Weather "CWSN" ["-t"," <tempF>F","-L","64","-H","77","--normal","green","--high","red","--low","lightblue"] 36000
-                    , Run Cpu ["-L","3","-H","50","--normal","green","--high","red"] 10
+       , commands = [ Run Cpu ["-L","3","-H","50","--normal","green","--high","red"] 10
                     , Run Memory ["-t","Mem: <usedratio>%"] 10
                     , Run Swap [] 10
                     , Run Date "%a %b %_d %l:%M" "date" 10
                     , Run StdinReader
-                    , Run Com "/home/david/rss.sh" [] "rss" 10
-                    , Run Com "/home/david/updates.sh" [] "pacman" 18000
-                    , Run Com "/home/david/screensaver.sh" [] "screensaver" 10
+                    , Run Com "/home/david/bin/rss.sh" [] "rss" 10
+                    , Run Com "/home/david/bin/updates.sh" [] "pacman" 100
+                    , Run Com "/home/david/bin/screensaver.sh" [] "screensaver" 10
+                    , Run Com "/home/david/bin/scroll.py" ["rss", "30"] "scroll" 1
+                    , Run Com "pulseaudio-ctl" ["current"] "volume" 5
                     ]
        , sepChar = "%"
        , alignSep = "}{"
-       , template = "%StdinReader% | Articles: %rss% | Updates: %pacman%}{ Screensaver: %screensaver% | %cpu% | %memory% * %swap%    <fc=#ee9a00>%date%</fc> | %CWSN%"
+       , template = "%StdinReader% \
+                    \| <action=`termite -e newsboat` button=1>Articles: %rss% - %scroll%</action> \
+                    \| Updates: %pacman% \
+                    \}{\
+                    \ <action=`sed -i 's/mode:\s*off/\x0/g; s/mode:\s*one/mode:\t\toff/g; s/\x0/mode:\t\tone/g' ~/.xscreensaver` button=1>Screensaver: %screensaver%</action> \
+                    \| <action=`termite -e 'htop -s PERCENT_CPU'` button=1>%cpu%</action> \
+                    \| <action=`termite -e 'htop -s PERCENT_MEM'` button=1>%memory% * %swap%</action>  \
+                    \| <action=`pulseaudio-ctl down` button=1>-</action>\
+                    \ <action=`pulseeffects` button=1>%volume%</action>\
+                    \ <action=`pulseaudio-ctl up` button=1>+</action> \
+                    \| <action=`gsimplecal` button=1><fc=#ee9a00>%date%</fc></action>"
        }

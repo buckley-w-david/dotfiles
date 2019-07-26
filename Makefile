@@ -26,9 +26,7 @@ xmonad.hs:
 
 .xmobarrc:
 	ln -sfn "$(DIR)/.xmobarrc" ~/.xmobarrc
-	ln -sfn "$(DIR)/rss.sh" ~/rss.sh
-	ln -sfn "$(DIR)/screensaver.sh" ~/screensaver.sh
-	ln -sfn "$(DIR)/updates.sh" ~/updates.sh
-
-test:
-	echo $(DIR)
+	mkdir -p ~/bin
+	ln -sfn "$(DIR)/rss.sh" ~/bin/rss.sh
+	ln -sfn "$(DIR)/screensaver.sh" ~/bin/screensaver.sh
+	ln -sfn "$(DIR)/updates.sh" ~/bin/updates.sh
