@@ -1,1 +1,0 @@
-checkupdates | wc -l

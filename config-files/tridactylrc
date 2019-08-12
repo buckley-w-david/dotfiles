@@ -1,0 +1,120 @@
+" based on bovine3dom's dogfood
+
+sanitise tridactyllocal tridactylsync
+
+"
+" General Settings
+"
+
+set theme dark
+
+" Sane hinting mode
+set hintfiltermode vimperator-reflow
+set hintnames numeric
+
+" Defaults to 300ms but I'm a 'move fast and close the wrong tabs' kinda chap
+set hintdelay 100
+
+"
+" set editorcmd to suckless terminal, or use the defaults on other platforms
+" js tri.browserBg.runtime.getPlatformInfo().then(os=>{const editorcmd = os.os=="linux" ? "st vim" : "auto"; tri.config.set("editorcmd", editorcmd)})
+
+
+"
+" Binds
+"
+"
+
+
+bind j scrollline +3
+bind k scrollline -3
+
+" Comment toggler for Reddit and Hacker News
+bind ;c hint -c [class*="expand"],[class="togg"]
+
+" Make gu take you back to subreddit from comments
+bindurl reddit.com gu urlparent 3
+
+" Google hinting
+bindurl www.google.c(om|a) f hint -Jc .rc > .r > a
+bindurl www.google.c(om|a) F hint -Jtc .rc > .r > a
+bindurl www.google.c(om|a) gF hint -Jqbc .rc > .r > a
+
+" Hacker News hinting
+bindurl news.ycombinator.com f hint -Jc span.pagetop > a,td.title > a,td.subtext > a:last-of-type
+bindurl news.ycombinator.com F hint -Jtc span.pagetop > a,td.title > a,td.subtext > a:last-of-type
+bindurl news.ycombinator.com gF hint -Jqbc span.pagetop > a,td.title > a,td.subtext > a:last-of-type
+
+bindurl news.ycombinator.com/item f hint -Jc span.pagetop > a,div.votearrow,a.hnuser,div.comment a
+bindurl news.ycombinator.com/item F hint -Jtc span.pagetop > a,div.votearrow,a.hnuser,div.comment a
+bindurl news.ycombinator.com/item gF hint -Jqbc span.pagetop > a,div.votearrow,a.hnuser,div.comment a
+
+" Reddit hinting
+bindurl www.reddit.com f hint -Jc a[data-click-id="subreddit"],a[data-click-id="body"],a.styled-outbound-link
+bindurl www.reddit.com F hint -Jtc a[data-click-id="subreddit"],a[data-click-id="body"],a.styled-outbound-link
+bindurl www.reddit.com F hint -Jqbc a[data-click-id="subreddit"],a[data-click-id="body"],a.styled-outbound-link
+
+" Old reddit hinting
+bindurl old.reddit.com f hint -Jc a[data-event-action="title"],.expando-button,a.subreddit,span.user > a,a.comments,div[id="srDropdownContainer"] > a,tr > td > a,ul.tabmenu > li > a,div.dropdown,div.drop-choices > form > a
+bindurl old.reddit.com F hint -Jtc a[data-event-action="title"],.expando-button,a.subreddit,span.user > a,a.comments,div.md > p > a,span.redditname > a,ul.tabmenu > li > a
+bindurl old.reddit.com gF hint -Jqbc a[data-event-action="title"],.expando-button,a.subreddit,span.user > a,a.comments,div.md > p > a,span.redditname > a,ul.tabmenu > li > a
+
+"
+" Youtube hinting
+"
+unbindurl youtube.com/watch f
+
+" Allow Ctrl-a to select all in the commandline
+unbind --mode=ex <C-a>
+
+" Allow Ctrl-c to copy in the commandline
+unbind --mode=ex <C-c>
+
+" Handy multiwindow/multitasking binds
+bind gd tabdetach
+bind gD composite tabduplicate | tabdetach
+
+" Make yy use canonical / short links on the 5 websites that support them
+bind yy clipboard yankshort
+
+" Open right click menu on links
+bind ;C composite hint_focus; !s xdotool key Menu
+
+
+"
+" Aliases
+"
+
+"
+" Autocmds
+"
+
+"
+" Autocontainers
+"
+
+"
+" Logging
+"
+
+
+"
+" URL redirects
+" 
+
+" Go old reddit
+autocmd DocStart ^http(s?)://www.reddit.com js tri.excmds.urlmodify("-t", "www", "old")
+" Mosquito nets won't make themselves
+autocmd DocStart ^http(s?)://www.amazon.ca js tri.excmds.urlmodify("-t", "www", "smile")
+" Disable Polymer on Youtube - infinite loop :(
+" autocmd DocStart ^http(s?)://www.youtube.com js tri.excmds.urlmodify("-s", "disable_polymer", "true")
+
+" 
+" Other
+"
+
+" Stupid workaround to let hint -; be used with composite which steals semi-colons
+command hint_focus hint -;
+"
+" This will have to do until someone writes us a nice syntax file :)
+" vim: set filetype=vim:

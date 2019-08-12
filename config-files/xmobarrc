@@ -7,10 +7,10 @@ Config { font = "-*-Fixed-Bold-R-Normal-*-12-*-*-*-*-*-*-*"
                     , Run Swap [] 10
                     , Run Date "%a %b %_d %l:%M" "date" 10
                     , Run StdinReader
-                    , Run Com "/home/david/bin/rss.sh" [] "rss" 10
-                    , Run Com "/home/david/bin/updates.sh" [] "pacman" 100
-                    , Run Com "/home/david/bin/screensaver.sh" [] "screensaver" 10
-                    , Run Com "/home/david/bin/scroll.py" ["rss", "30"] "scroll" 1
+                    , Run Com "/home/david/scripts/rss.sh" [] "rss" 10
+                    , Run Com "/home/david/scripts/updates.sh" [] "pacman" 100
+                    , Run Com "/home/david/scripts/screensaver.sh" [] "screensaver" 10
+                    , Run Com "/home/david/scripts/scroll.py" ["rss", "30"] "scroll" 1
                     , Run Com "pulseaudio-ctl" ["current"] "volume" 5
                     ]
        , sepChar = "%"
@@ -25,5 +25,6 @@ Config { font = "-*-Fixed-Bold-R-Normal-*-12-*-*-*-*-*-*-*"
                     \| <action=`pulseaudio-ctl down` button=1>-</action>\
                     \ <action=`pulseeffects` button=1>%volume%</action>\
                     \ <action=`pulseaudio-ctl up` button=1>+</action> \
-                    \| <action=`gsimplecal` button=1><fc=#ee9a00>%date%</fc></action>"
+                    \| <action=`gsimplecal` button=1><fc=#ee9a00>%date%</fc></action> \
+                    \| <action=`DISPLAY=:0 xdotool key 'Super_L+b'` button=1>X</action> "
        }

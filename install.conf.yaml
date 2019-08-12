@@ -1,0 +1,21 @@
+- defaults:
+    link:
+      relink: true
+
+- clean: ['~']
+
+- link:
+    ~/.tmux.conf: config-files/tmux.conf
+    ~/.vimrc: config-files/vimrc
+    ~/.bashrc.common: config-files/bashrc.common
+    ~/.editorconfig: config-files/editorconfig
+    ~/.tridactylrc: config-files/tridactylrc
+    ~/.xmonad/xmonad.hs: config-files/xmonad.hs
+    ~/.xmobarrc: config-files/xmobarrc
+    ~/scripts: 
+      glob: true
+      create: true
+      path: scripts/*
+
+- shell:
+  - [git submodule update --init --recursive, Installing submodules]
