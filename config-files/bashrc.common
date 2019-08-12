@@ -11,5 +11,3 @@ alias gp='git push '
 
 alias got='git '
 alias get='git '
-
-git config --global alias.logtree "log --graph --oneline --decorate --all"

@@ -1,0 +1,5 @@
+[user]
+	email = buckley.w.david@gmail.com
+	name = David Buckley
+[alias]
+	logtree = log --graph --oneline --decorate --all
