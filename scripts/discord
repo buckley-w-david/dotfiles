@@ -1,0 +1,6 @@
+#!/usr/bin/sh
+
+# Discord has a bad habit of running a ludicrous number of xdg-mime processes
+# on startup, eating up a large majority of my CPU. This file is a hack to prevent
+# that behavior by hiding xdg-mime
+PATH="" exec /usr/bin/discord "$@"

@@ -1,0 +1,15 @@
+#!/bin/sh
+STDIN=$(</dev/stdin)
+EXPRESSION=$(echo -n "$STDIN" | dmenu -p "Python:")
+if [[ -n "$EXPRESSION" ]]; then
+    RESULT=$( python3 <<EOF
+result = $EXPRESSION
+print(result)
+EOF
+    )
+    echo -ne "${RESULT}\n${STDIN}" | dmenu_python -p "Result:"
+    # Copy result to clipboard
+    # if [[ -n "$COPY" ]]; then
+    #     echo "$COPY" | xclip -selection clipboard
+    # fi
+fi
