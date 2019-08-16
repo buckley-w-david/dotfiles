@@ -1,4 +1,9 @@
+#
 # Config
+#
+
+# Quite a bit of config and process was obtained by the following artice
+# mutt's secret sauce: http://nosubstance.me/post/mutt-secret-sauce/
 
 set sendmail = "/bin/sh $HOME/.mutt/scripts/sendmail"
 set new_mail_command = "/bin/sh $HOME/.mutt/scripts/new_mail %u"
@@ -41,6 +46,7 @@ set mail_check = 120
 # Bindings
 #
 bind index u toggle-read
+bind index G imap-fetch-mail
 
 #
 # Macros

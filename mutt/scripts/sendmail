@@ -2,4 +2,4 @@
 
 PASSWORDEVAL="pass show $PASS_NAME | head -n 1"
 
-MIMEmbellish | msmtp -a "$PASS_NAME" --passwordeval "$PASSWORDEVAL" "$@"
+/bin/sh ~/.mutt/scripts/MIMEmbellish | msmtp -a "$PASS_NAME" --passwordeval "$PASSWORDEVAL" "$@"
