@@ -1,0 +1,7 @@
+#!/bin/sh
+
+UNREAD = ${1:-0}
+
+notify-send "New message! There are $UNREAD unread messages."
+# TODO: Figure out how to query for number of unread
+/home/david/bin/scroll.py "eml" "0"

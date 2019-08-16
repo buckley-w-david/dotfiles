@@ -1,0 +1,53 @@
+# Config
+
+set sendmail = "/bin/sh $HOME/.mutt/scripts/sendmail"
+set new_mail_command = "/bin/sh $HOME/.mutt/scripts/new_mail %u"
+set tmpdir = '/tmp/mutt'
+
+set folder      = imaps://imap.gmail.com/
+unset record
+
+set my_password=`pass show $PASS_NAME | head -n 1`
+set my_username=`pass show $PASS_NAME | sed '2q;d' | awk '{print $2}'`
+
+set imap_user   = $my_username
+set imap_pass   = $my_password
+set spoolfile   = +INBOX
+# mailboxes       = +INBOX
+set imap_check_subscribed
+
+# Store message headers locally to speed things up.
+# If hcache is a folder, Mutt will create sub cache folders for each account which may speeds things up even more.
+set header_cache = ~/.cache/mutt
+
+# Store messages locally to speed things up, like searching message bodies.
+# Can be the same folder as header_cache.
+# This will cost important disk usage according to your e-mail amount.
+set message_cachedir = "~/.cache/mutt"
+
+# Specify where to save and/or look for postponed messages.
+set postponed = +[Gmail]/Drafts
+
+# Allow Mutt to open a new IMAP connection automatically.
+unset imap_passive
+
+# Keep the IMAP connection alive by polling intermittently (time in seconds).
+set imap_keepalive = 300
+
+# How often to check for new mail (time in seconds).
+set mail_check = 120
+
+#
+# Bindings
+#
+bind index u toggle-read
+
+#
+# Macros
+#
+
+# Mark as unread mail as read
+# https://brianbuccola.com/how-to-mark-all-emails-as-read-in-mutt/
+macro index A \
+    "<tag-pattern>~N<enter><tag-prefix><clear-flag>N<untag-pattern>.<enter>" \
+        "mark all new as read"

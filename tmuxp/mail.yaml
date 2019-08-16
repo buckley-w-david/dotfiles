@@ -1,0 +1,13 @@
+session_name: mail
+windows:
+- window_name: buckley.w.david@gmail.com
+  shell_command_before:
+    - sleep 1
+  panes:
+    - PASS_NAME="Mail/buckley.w.david@gmail.com" mutt
+- window_name: modd
+  shell_command_before:
+    - mkdir /tmp/mutt
+    - cd -P /tmp/mutt
+  panes:
+    - modd -f ~/.mutt/modd.conf
