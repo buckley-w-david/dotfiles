@@ -5,18 +5,29 @@
 - clean: ['~']
 
 - link:
-    ~/.tmux.conf: config-files/tmux.conf
-    ~/.vimrc: config-files/vimrc
-    ~/.gitconfig: config-files/gitconfig
-    ~/.bashrc.common: config-files/bashrc.common
-    ~/.editorconfig: config-files/editorconfig
-    ~/.tridactylrc: config-files/tridactylrc
-    ~/.xmonad/xmonad.hs: config-files/xmonad.hs
-    ~/.xmobarrc: config-files/xmobarrc
+    ~/.bashrc.common:
+    ~/.editorconfig:
+    ~/.gitconfig:
+    ~/.muttrc:
+    ~/.tmux.conf:
+    ~/.tridactylrc:
+    ~/.vimrc:
+    ~/.xmonad/xmonad.hs: 
+        create: true
+        path: xmonad/xmonad.hs
+    ~/.xmobarrc:
+    ~/.mutt:
+        glob: true
+        create: true
+        path: mutt/*
     ~/scripts: 
       glob: true
       create: true
       path: scripts/*
+    ~/.tmuxp:
+        glob: true
+        create: true
+        path: tmuxp/*
 
 - shell:
   - [git submodule update --init --recursive, Installing submodules]

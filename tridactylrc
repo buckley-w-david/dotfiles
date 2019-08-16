@@ -30,7 +30,7 @@ bind j scrollline +3
 bind k scrollline -3
 
 " Comment toggler for Reddit and Hacker News
-bind ;c hint -c [class*="expand"],[class="togg"]
+bind ;c hint -Jc [class*="expand"],[class="togg"]
 
 " Make gu take you back to subreddit from comments
 bindurl reddit.com gu urlparent 3
@@ -45,9 +45,9 @@ bindurl news.ycombinator.com f hint -Jc span.pagetop > a,td.title > a,td.subtext
 bindurl news.ycombinator.com F hint -Jtc span.pagetop > a,td.title > a,td.subtext > a:last-of-type
 bindurl news.ycombinator.com gF hint -Jqbc span.pagetop > a,td.title > a,td.subtext > a:last-of-type
 
-bindurl news.ycombinator.com/item f hint -Jc span.pagetop > a,div.votearrow,a.hnuser,div.comment a
-bindurl news.ycombinator.com/item F hint -Jtc span.pagetop > a,div.votearrow,a.hnuser,div.comment a
-bindurl news.ycombinator.com/item gF hint -Jqbc span.pagetop > a,div.votearrow,a.hnuser,div.comment a
+bindurl news.ycombinator.com/item f hint -Jc span.pagetop > a,a.storylink,div.votearrow,a.hnuser,div.comment a
+bindurl news.ycombinator.com/item F hint -Jtc span.pagetop > a,a.storylink,div.votearrow,a.hnuser,div.comment a
+bindurl news.ycombinator.com/item gF hint -Jqbc span.pagetop > a,a.storylink,div.votearrow,a.hnuser,div.comment a
 
 " Reddit hinting
 bindurl www.reddit.com f hint -Jc a[data-click-id="subreddit"],a[data-click-id="body"],a.styled-outbound-link
@@ -105,7 +105,7 @@ bind ;C composite hint_focus; !s xdotool key Menu
 " Go old reddit
 autocmd DocStart ^http(s?)://www.reddit.com js tri.excmds.urlmodify("-t", "www", "old")
 " Mosquito nets won't make themselves
-autocmd DocStart ^http(s?)://www.amazon.ca js tri.excmds.urlmodify("-t", "www", "smile")
+autocmd DocStart ^http(s?)://www.amazon.com js tri.excmds.urlmodify("-t", "www", "smile")
 " Disable Polymer on Youtube - infinite loop :(
 " autocmd DocStart ^http(s?)://www.youtube.com js tri.excmds.urlmodify("-s", "disable_polymer", "true")
 

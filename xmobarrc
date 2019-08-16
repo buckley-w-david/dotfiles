@@ -26,5 +26,5 @@ Config { font = "-*-Fixed-Bold-R-Normal-*-12-*-*-*-*-*-*-*"
                     \ <action=`pulseeffects` button=1>%volume%</action>\
                     \ <action=`pulseaudio-ctl up` button=1>+</action> \
                     \| <action=`gsimplecal` button=1><fc=#ee9a00>%date%</fc></action> \
-                    \| <action=`DISPLAY=:0 xdotool key 'Super_L+b'` button=1>X</action> "
+                    \| <action=`DISPLAY=:0 xdotool key 'Super_L+b'` button=1><fc=#ff0000>X</fc></action> "
        }

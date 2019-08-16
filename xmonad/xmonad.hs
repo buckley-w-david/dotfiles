@@ -5,6 +5,7 @@ import XMonad
 import XMonad.Actions.CopyWindow
 import XMonad.Actions.CycleWindows
 import XMonad.Actions.CycleWS
+import XMonad.Actions.SpawnOn
 import XMonad.Hooks.DynamicLog
 import XMonad.Actions.DynamicWorkspaces
 import XMonad.Hooks.EwmhDesktops
@@ -53,7 +54,7 @@ main = do
     , logHook           = dynamicLogWithPP xmobarPP 
                                   { ppOutput = hPutStrLn xmproc 
                                   , ppTitle = xmobarColor "green" "" . shorten 50}
-    , manageHook        = composeAll [ isFullscreen                   --> doFullFloat
+    , manageHook        = manageSpawn <+> composeAll [ isFullscreen   --> doFullFloat
                                      , isDialog                       --> doCenterFloat
                                      , className =? "MPlayer"         --> doFloat
                                      , className =? "mplayer2"        --> doFloat
