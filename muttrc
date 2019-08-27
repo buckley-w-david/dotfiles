@@ -6,7 +6,7 @@
 # mutt's secret sauce: http://nosubstance.me/post/mutt-secret-sauce/
 
 set sendmail = "/bin/sh $HOME/.mutt/scripts/sendmail"
-set new_mail_command = "/bin/sh $HOME/.mutt/scripts/new_mail %u"
+set new_mail_command = "/bin/sh $HOME/.mutt/scripts/new_mail %u %b"
 set tmpdir = '/tmp/mutt'
 
 set folder      = imaps://imap.gmail.com/
@@ -18,7 +18,6 @@ set my_username=`pass show $PASS_NAME | sed '2q;d' | awk '{print $2}'`
 set imap_user   = $my_username
 set imap_pass   = $my_password
 set spoolfile   = +INBOX
-# mailboxes       = +INBOX
 set imap_check_subscribed
 
 # Store message headers locally to speed things up.

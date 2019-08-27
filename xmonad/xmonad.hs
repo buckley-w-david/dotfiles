@@ -6,8 +6,9 @@ import XMonad.Actions.CopyWindow
 import XMonad.Actions.CycleWindows
 import XMonad.Actions.CycleWS
 import XMonad.Actions.SpawnOn
-import XMonad.Hooks.DynamicLog
 import XMonad.Actions.DynamicWorkspaces
+import XMonad.Hooks.DynamicLog
+import XMonad.Hooks.DynamicProperty
 import XMonad.Hooks.EwmhDesktops
 import XMonad.Hooks.ManageHelpers (isFullscreen, isDialog, doFullFloat, doCenterFloat, transience')
 import XMonad.Hooks.ManageHelpers
@@ -25,6 +26,9 @@ import XMonad.Util.EZConfig
 import XMonad.Util.Run(spawnPipe)
 import XMonad.Util.Scratchpad
 import XMonad.Util.NamedScratchpad
+
+-- myHandleEventHook :: Event -> X All
+myHandleEventHook = dynamicPropertyChange "WM_NAME" (className =? "Spotify" --> defaultFloating)
 
 myLayoutHook = avoidStruts $  full ||| tall -- ||| grid ||| tab 
   where
@@ -72,7 +76,7 @@ main = do
                                      , transience'
                                      , scratchpadManageHookDefault
                                      ]
-    , handleEventHook   = handleEventHook def <+> fullscreenEventHook
+    , handleEventHook   = myHandleEventHook <+> handleEventHook def <+> fullscreenEventHook
     , layoutHook  = myLayoutHook
     , startupHook = ewmhDesktopsStartup
     , workspaces = ["1:main", "2:comms", "3:media", "4", "5", "6" ,"7:games", "8", "9","10"] 
@@ -110,7 +114,8 @@ main = do
       role = stringProperty "WM_WINDOW_ROLE"
       disableXscreensaver = "sed -i 's/mode:\\s*off/\\x0/g; s/mode:\\s*one/mode:\\t\\toff/g; s/\\x0/mode:\\t\\tone/g' ~/.xscreensaver"
       scratchpads = [
-                      NS "spotify" "D_PRELOAD=LD_PRELOAD=libcrypto-compat.so.1.0.0:libssl-compat.so.1.0.0:libcurl-openssl-1.0.so:/usr/lib/spotifywm.so /usr/local/bin/spotify" (className =? "Spotify") defaultFloating
+                      -- NS "spotify" "D_PRELOAD=LD_PRELOAD=libcrypto-compat.so.1.0.0:libssl-compat.so.1.0.0:libcurl-openssl-1.0.so:/usr/lib/spotifywm.so /usr/local/bin/spotify" (className =? "Spotify") defaultFloating
+                      NS "spotify" "spotify" (className =? "Spotify") defaultFloating
                     , NS "termite" "termite --name scratchpad" (appName =? "scratchpad") defaultFloating
                     ]
      

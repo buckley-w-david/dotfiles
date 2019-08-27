@@ -31,6 +31,7 @@ bind k scrollline -3
 
 " Comment toggler for Reddit and Hacker News
 bind ;c hint -Jc [class*="expand"],[class="togg"]
+bind ;u hint -Jc .arrow
 
 " Make gu take you back to subreddit from comments
 bindurl reddit.com gu urlparent 3
@@ -55,9 +56,9 @@ bindurl www.reddit.com F hint -Jtc a[data-click-id="subreddit"],a[data-click-id=
 bindurl www.reddit.com F hint -Jqbc a[data-click-id="subreddit"],a[data-click-id="body"],a.styled-outbound-link
 
 " Old reddit hinting
-bindurl old.reddit.com f hint -Jc a[data-event-action="title"],.expando-button,a.subreddit,span.user > a,a.comments,div[id="srDropdownContainer"] > a,tr > td > a,ul.tabmenu > li > a,div.dropdown,div.drop-choices > form > a
-bindurl old.reddit.com F hint -Jtc a[data-event-action="title"],.expando-button,a.subreddit,span.user > a,a.comments,div.md > p > a,span.redditname > a,ul.tabmenu > li > a
-bindurl old.reddit.com gF hint -Jqbc a[data-event-action="title"],.expando-button,a.subreddit,span.user > a,a.comments,div.md > p > a,span.redditname > a,ul.tabmenu > li > a
+bindurl old.reddit.com f hint -Jc a[data-event-action="title"],a.subreddit,span.user > a,a.comments,div[id="srDropdownContainer"] > a,tr > td > a,ul.tabmenu > li > a,div.dropdown,div.drop-choices > form > a
+bindurl old.reddit.com F hint -Jtc a[data-event-action="title"],a.subreddit,span.user > a,a.comments,div.md > p > a,span.redditname > a,ul.tabmenu > li > a
+bindurl old.reddit.com gF hint -Jqbc a[data-event-action="title"],a.subreddit,span.user > a,a.comments,div.md > p > a,span.redditname > a,ul.tabmenu > li > a
 
 "
 " Youtube hinting
@@ -103,9 +104,10 @@ bind ;C composite hint_focus; !s xdotool key Menu
 " 
 
 " Go old reddit
-autocmd DocStart ^http(s?)://www.reddit.com js tri.excmds.urlmodify("-t", "www", "old")
+" autocmd DocStart ^http(s?)://www.reddit.com js tri.excmds.urlmodify("-t", "www", "old")
+autocmd DocStart ^http(s?)://www.reddit.com urlmodify -t www old
 " Mosquito nets won't make themselves
-autocmd DocStart ^http(s?)://www.amazon.com js tri.excmds.urlmodify("-t", "www", "smile")
+" autocmd DocStart ^http(s?)://www.amazon.com js tri.excmds.urlmodify("-t", "www", "smile")
 " Disable Polymer on Youtube - infinite loop :(
 " autocmd DocStart ^http(s?)://www.youtube.com js tri.excmds.urlmodify("-s", "disable_polymer", "true")
 

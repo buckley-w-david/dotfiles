@@ -1,0 +1,34 @@
+#!/bin/bash
+
+POSITIONAL=()
+OPTIONS=()
+EXPRESSIONS=()
+
+while [[ $# -gt 0 ]]
+do
+    key="$1"
+
+    case $key in
+        -e)
+        EXPRESSIONS+=("$2")
+        shift # past argument
+        shift # past value
+        ;;
+        *)    # unknown option
+        if [[ "$1" == -* ]]
+        then
+            OPTIONS+=("$1 $2")
+            shift
+        else
+            POSITIONAL+=("$1")
+        fi
+        shift # past argument
+        ;;
+    esac
+done
+set -- "${POSITIONAL[@]}" # restore positional parameters
+
+for exp in "${EXPRESSIONS[@]}"
+do
+    perl-rename ${OPTIONS[@]} "$exp" $@
+done

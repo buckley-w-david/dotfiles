@@ -1,7 +1,12 @@
 #!/bin/sh
 
-UNREAD = ${1:-0}
-
-notify-send "New message! There are $UNREAD unread messages."
+UNREAD=${1:-0}
+MAILBOXES=${2:-0}
+if [[ "$UNREAD" == "1" ]]
+then
+    notify-send "New message! There is 1 unread messages in $MAILBOXES mailboxes."
+else
+    notify-send "New message! There are $UNREAD unread messages in $MAILBOXES mailboxes."
+fi
 # TODO: Figure out how to query for number of unread
-/home/david/bin/scroll.py "eml" "0"
+/home/david/scripts/scroll.py "eml" "@"
