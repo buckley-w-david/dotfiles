@@ -8,6 +8,8 @@
     ~/.bashrc.common:
     ~/.editorconfig:
     ~/.gitconfig:
+    ~/.gvimrc:
+    ~/.inputrc:
     ~/.muttrc:
     ~/.tmux.conf:
     ~/.tridactylrc:
