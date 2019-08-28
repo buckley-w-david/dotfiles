@@ -27,8 +27,19 @@ import XMonad.Util.Run(spawnPipe)
 import XMonad.Util.Scratchpad
 import XMonad.Util.NamedScratchpad
 
--- myHandleEventHook :: Event -> X All
-myHandleEventHook = dynamicPropertyChange "WM_NAME" (className =? "Spotify" --> defaultFloating)
+onlyOne :: String -> String -> String
+onlyOne proc args = "pidof " ++ proc ++ " || " ++ proc ++ " " ++ args
+
+-- TODO: Create dynamicPropertyChange hooks for each of my workspaces so that anything
+-- with my CUSTOM_TYPE xprop gets moved to it's correct workspace. This is a measure to help prevent
+-- have to list all that various and sundry applications I'd like to move in my xmonad config file
+-- makeDynamicPropertyChange
+
+myWorkspaces = ["main", "comms", "media", "dev1", "dev2", "dev3" ,"games", "wiki", "launchers"] 
+
+-- myWorkspaceHooks = map makeDynamicPropertyChange myWorkspaces
+spotifyEventHook = dynamicPropertyChange "WM_NAME" (className =? "Spotify" --> defaultFloating) -- Spotify doesn't set their props before it maps itself, we have to wait for the change dynamically
+gameEventHook = dynamicPropertyChange "CUSTOM_TYPE" (stringProperty "CUSTOM_TYPE" =? "Game" --> doShift "7:games") -- I'd like to not have to explicitly list game stuff, and instead give them a custom xprop that we look for
 
 myLayoutHook = avoidStruts $  full ||| tall -- ||| grid ||| tab 
   where
@@ -37,8 +48,6 @@ myLayoutHook = avoidStruts $  full ||| tall -- ||| grid ||| tab
    -- grid = smartBorders Grid
    -- tab  = smartBorders simpleTabbed
 
-onlyOne :: String -> String -> String
-onlyOne proc args = "pidof " ++ proc ++ " || " ++ proc ++ " " ++ args
 
 main = do
     -- TODO: Fix this janky "onlyOne" solution
@@ -60,13 +69,7 @@ main = do
                                   , ppTitle = xmobarColor "green" "" . shorten 50}
     , manageHook        = manageSpawn <+> composeAll [ isFullscreen   --> doFullFloat
                                      , isDialog                       --> doCenterFloat
-                                     , className =? "MPlayer"         --> doFloat
-                                     , className =? "mplayer2"        --> doFloat
-                                     , className =? "mpv"             --> doFloat
                                      , className =? "Gimp"            --> doFloat
-                                     , className =? "Vlc"             --> doFloat
-                                     , className =? "plasma-desktop"  --> doFloat
-                                     , className =? "plasmashell"     --> doFloat
                                      , className =? "zoom"            --> doFloat
                                      , role      =? "pop-up"          --> doFloat
                                      , className =? "Steam"	          --> doShift "7:games"
@@ -76,10 +79,10 @@ main = do
                                      , transience'
                                      , scratchpadManageHookDefault
                                      ]
-    , handleEventHook   = myHandleEventHook <+> handleEventHook def <+> fullscreenEventHook
+    , handleEventHook   = spotifyEventHook <+> gameEventHook <+> handleEventHook def <+> fullscreenEventHook
     , layoutHook  = myLayoutHook
     , startupHook = ewmhDesktopsStartup
-    , workspaces = ["1:main", "2:comms", "3:media", "4", "5", "6" ,"7:games", "8", "9","10"] 
+    , workspaces = map ( \(x, y) -> show x ++ ":" ++ y) (zip [1..] myWorkspaces)
     } `additionalKeysP` [ ("M-b"          , sendMessage ToggleStruts              ) -- toggle the status bar gap
          , ("M-<Tab>"        , cycleRecentWindows [xK_Alt_L] xK_Tab xK_Tab  ) -- classic alt-tab behaviour
          , ("M-<Right>"      , nextWS                                       ) -- go to next workspace
@@ -96,7 +99,7 @@ main = do
          , ("C-M-a"          , killAllOtherCopies                           ) -- remove window from all but current
          , ("S-M-a"          , kill1                                        ) -- remove window from current, kill if only one
          , ("M-p"            , spawn "dmenu_run"                            ) -- app launcher
-         , ("M-c"            , spawn "dmenu_python"                         ) -- app launcher
+         , ("M-c"            , spawn "dmenu_python"                         ) -- Run one-off Python commands
          , ("C-M-p"          , spawn "passmenu"                             ) -- Display password prompt
          , ("S-M-p"          , spawn "passmenu --type"                      ) -- Display password prompt
          , ("M-r"            , spawn "xmonad --recompile; xmonad --restart" ) -- restart xmonad
@@ -106,7 +109,7 @@ main = do
          , ("C-M-d"          , spawn disableXscreensaver                    ) -- disable xscreensaver
          , ("C-M-<Delete>"   , spawn "shutdown -r now"                      ) -- reboot
          , ("C-M-<Insert>"   , spawn "shutdown -h now"                      ) -- poweroff
-         , ("M-S-q"          , io  exitSuccess                              )
+         , ("M-S-q"          , io  exitSuccess                              ) -- Exit Xmonad
          , ("M-q"            , restart "xmonad" True                        )
          ]
 
@@ -114,7 +117,6 @@ main = do
       role = stringProperty "WM_WINDOW_ROLE"
       disableXscreensaver = "sed -i 's/mode:\\s*off/\\x0/g; s/mode:\\s*one/mode:\\t\\toff/g; s/\\x0/mode:\\t\\tone/g' ~/.xscreensaver"
       scratchpads = [
-                      -- NS "spotify" "D_PRELOAD=LD_PRELOAD=libcrypto-compat.so.1.0.0:libssl-compat.so.1.0.0:libcurl-openssl-1.0.so:/usr/lib/spotifywm.so /usr/local/bin/spotify" (className =? "Spotify") defaultFloating
                       NS "spotify" "spotify" (className =? "Spotify") defaultFloating
                     , NS "termite" "termite --name scratchpad" (appName =? "scratchpad") defaultFloating
                     ]
