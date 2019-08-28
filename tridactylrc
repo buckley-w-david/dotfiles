@@ -31,7 +31,7 @@ bind k scrollline -3
 
 " Comment toggler for Reddit and Hacker News
 bind ;c hint -Jc [class*="expand"],[class="togg"]
-bind ;u hint -Jc .arrow
+bind ;u hint -Jc [class*="arrow"]
 
 " Make gu take you back to subreddit from comments
 bindurl reddit.com gu urlparent 3
@@ -46,9 +46,9 @@ bindurl news.ycombinator.com f hint -Jc span.pagetop > a,td.title > a,td.subtext
 bindurl news.ycombinator.com F hint -Jtc span.pagetop > a,td.title > a,td.subtext > a:last-of-type
 bindurl news.ycombinator.com gF hint -Jqbc span.pagetop > a,td.title > a,td.subtext > a:last-of-type
 
-bindurl news.ycombinator.com/item f hint -Jc span.pagetop > a,a.storylink,div.votearrow,a.hnuser,div.comment a
-bindurl news.ycombinator.com/item F hint -Jtc span.pagetop > a,a.storylink,div.votearrow,a.hnuser,div.comment a
-bindurl news.ycombinator.com/item gF hint -Jqbc span.pagetop > a,a.storylink,div.votearrow,a.hnuser,div.comment a
+bindurl news.ycombinator.com/item f hint -Jc span.pagetop > a,a.storylink,a.hnuser,div.comment a
+bindurl news.ycombinator.com/item F hint -Jtc span.pagetop > a,a.storylink,a.hnuser,div.comment a
+bindurl news.ycombinator.com/item gF hint -Jqbc span.pagetop > a,a.storylink,a.hnuser,div.comment a
 
 " Reddit hinting
 bindurl www.reddit.com f hint -Jc a[data-click-id="subreddit"],a[data-click-id="body"],a.styled-outbound-link
