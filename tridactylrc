@@ -41,6 +41,11 @@ bindurl www.google.c(om|a) f hint -Jc .rc > .r > a
 bindurl www.google.c(om|a) F hint -Jtc .rc > .r > a
 bindurl www.google.c(om|a) gF hint -Jqbc .rc > .r > a
 
+" DuckDuckGo hinting
+bindurl duckduckgo.com f hint -Jc .result__a,.result__url__domain
+bindurl duckduckgo.com F hint -Jtc .result__a,.result__url__domain
+bindurl duckduckgo.com gF hint -Jqbc .result__a,.result__url__domain
+
 " Hacker News hinting
 bindurl news.ycombinator.com f hint -Jc span.pagetop > a,td.title > a,td.subtext > a:last-of-type
 bindurl news.ycombinator.com F hint -Jtc span.pagetop > a,td.title > a,td.subtext > a:last-of-type
