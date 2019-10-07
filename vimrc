@@ -26,6 +26,7 @@ set ruler               " turn on ruler
 set number              " add line numbers
 set cursorline          " highlight currrent line
 filetype indent on      " load filetype-specific indent files
+filetype plugin on      " load filetype-specific plugin files
 set wildmenu            " visual autocomplete for command menu
 set lazyredraw          " redraw only when we need to.
 set showmatch           " highlight matching [{()}]
@@ -97,6 +98,8 @@ Plugin 'prettier/vim-prettier'
 Plugin 'vim-scripts/st.vim'
 Plugin 'francoiscabrol/ranger.vim'
 Plugin 'xuhdev/vim-latex-live-preview'
+Plugin 'dart-lang/dart-vim-plugin'
+Plugin 'thosakwe/vim-flutter'
 call vundle#end()
 
 " Ale
@@ -112,3 +115,6 @@ let g:EditorConfig_exclude_patterns = ['fugitive://.*']
 " vim-prettier
 let g:prettier#config#single_quote = 'true'
 let g:prettier#config#semi = 'false'
+
+" Flutter
+" call FlutterMenu()
