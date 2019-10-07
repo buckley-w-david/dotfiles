@@ -65,6 +65,9 @@ bindurl old.reddit.com f hint -Jc a[data-event-action="title"],a.subreddit,span.
 bindurl old.reddit.com F hint -Jtc a[data-event-action="title"],a.subreddit,span.user > a,a.comments,div.md > p > a,span.redditname > a,ul.tabmenu > li > a
 bindurl old.reddit.com gF hint -Jqbc a[data-event-action="title"],a.subreddit,span.user > a,a.comments,div.md > p > a,span.redditname > a,ul.tabmenu > li > a
 
+bindurl old\.reddit\.com\/r\/.*\/comments f hint -Jc a
+bindurl old\.reddit\.com\/r\/.*\/comments F hint -Jtc a
+bindurl old\.reddit\.com\/r\/.*\/comments gF hint -Jqbc a 
 "
 " Youtube hinting
 "
