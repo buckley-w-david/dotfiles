@@ -1,8 +1,10 @@
+import Control.Monad (liftM2)
 import System.IO
 import System.Exit (exitSuccess)
 
 import XMonad
 import XMonad.Actions.CopyWindow
+import XMonad.Core (withDisplay)
 import XMonad.Actions.CycleWindows
 import XMonad.Actions.CycleWS
 import XMonad.Actions.SpawnOn
@@ -30,6 +32,17 @@ import XMonad.Util.NamedScratchpad
 onlyOne :: String -> String -> String
 onlyOne proc args = "pidof " ++ proc ++ " || " ++ proc ++ " " ++ args
 
+-- Create a new workspace named after the WM_NAME property of the currently focused window, and switch to it
+dynamicWorkspaceFromFocused :: X() 
+dynamicWorkspaceFromFocused = do ss <- gets windowset
+                                 whenJust (W.peek ss) $ \w -> do
+                                    wmName <-  withDisplay $ \d -> getStringProperty d w "WM_NAME"
+                                    case wmName of
+                                      Just name -> do
+                                         addHiddenWorkspace name
+                                         windows . W.shift $ name
+                                         windows . W.greedyView $ name
+
 -- TODO: Create dynamicPropertyChange hooks for each of my workspaces so that anything
 -- with my CUSTOM_TYPE xprop gets moved to it's correct workspace. This is a measure to help prevent
 -- have to list all that various and sundry applications I'd like to move in my xmonad config file
@@ -48,6 +61,16 @@ myLayoutHook = avoidStruts $  full ||| tall -- ||| grid ||| tab
    -- grid = smartBorders Grid
    -- tab  = smartBorders simpleTabbed
 
+myXPConfig :: XPConfig
+myXPConfig = defaultXPConfig
+              {font        = "xft:Monospace:pixelsize=16"
+              , bgColor     = "black"
+              , fgColor     = "grey"
+              , bgHLight    = "#4444aa"
+              , fgHLight    = "#ddddff"
+              , borderColor = "#444488"
+              , position    = Top
+              }
 
 main = do
     -- TODO: Fix this janky "onlyOne" solution
@@ -84,33 +107,53 @@ main = do
     , startupHook = ewmhDesktopsStartup
     , workspaces = map ( \(x, y) -> show x ++ ":" ++ y) (zip [1..] myWorkspaces)
     } `additionalKeysP` [ ("M-b"          , sendMessage ToggleStruts              ) -- toggle the status bar gap
+         -- Workspace Bindings
          , ("M-<Tab>"        , cycleRecentWindows [xK_Alt_L] xK_Tab xK_Tab  ) -- classic alt-tab behaviour
          , ("M-<Right>"      , nextWS                                       ) -- go to next workspace
          , ("M-<Left>"       , prevWS                                       ) -- go to prev workspace
          , ("M-S-<Right>"    , shiftToNext                                  ) -- move client to next workspace
          , ("M-S-<Left>"     , shiftToPrev                                  ) -- move client to prev workspace
+
+         -- Dynamic Workspace Bindings
+         , ("M-v"            , selectWorkspace myXPConfig                   ) -- Create a new dynamic workspace
+         , ("M-S-v"          , withWorkspace myXPConfig (windows . W.shift) ) -- Shift current window to workspace
+         , ("M-m"            , dynamicWorkspaceFromFocused                  ) -- Create a new dynamic workspace from the name of the currently focused window
+         , ("M-<Backspace>"  , removeWorkspace                              ) -- Delete dynamic workspace
+         , ("M-S-r"          , renameWorkspace myXPConfig                   ) -- Rename
+
+         -- Window Copying Bindings
+         , ("M-a"            , windows copyToAll                            ) -- Pin to all workspaces
+         , ("M-C-a"          , killAllOtherCopies                           ) -- remove window from all but current
+         , ("M-S-a"          , kill1                                        ) -- remove window from current, kill if only one
+
+         -- dmenu Shenanigans
+         , ("M-p"            , spawn "dmenu_run_history"                    ) -- app launcher
+         , ("M-c"            , spawn "dmenu_python"                         ) -- Run one-off Python commands
+
+         -- Password Manager
+         , ("M-C-p"          , spawn "passmenu2"                            ) -- Display password prompt
+         , ("M-S-p"          , spawn "passmenu2 --type"                     ) -- Display password prompt
+
+         -- System Controls
+         , ("M-C-d"          , spawn disableXscreensaver                    ) -- disable xscreensaver
          , ("M-<Page_Up>"    , spawn "pulseaudio-ctl up"                    ) -- Volume up 5%
          , ("M-<Page_Down>"  , spawn "pulseaudio-ctl down"                  ) -- Volume down 5%
          , ("M-S-m"          , spawn "pulseaudio-ctl mute"                  ) -- Volume down 5%
+         , ("M-C-l"          , spawn "xscreensaver-command -lock"           ) -- lock screen
+
+         -- Applications
          , ("<Print>"        , spawn "spectacle"                            ) -- Screenshot
          , ("M-S-s"          , namedScratchpadAction scratchpads "spotify"  ) -- Spawn a scratchpad with spotify
          , ("M-<F12>"        , namedScratchpadAction scratchpads "termite"  ) -- Spawn a scratchpad with termite
-         , ("M-a"            , windows copyToAll                            ) -- Pin to all workspaces
-         , ("C-M-a"          , killAllOtherCopies                           ) -- remove window from all but current
-         , ("S-M-a"          , kill1                                        ) -- remove window from current, kill if only one
-         , ("M-p"            , spawn "dmenu_run"                            ) -- app launcher
-         , ("M-c"            , spawn "dmenu_python"                         ) -- Run one-off Python commands
-         , ("C-M-p"          , spawn "passmenu"                             ) -- Display password prompt
-         , ("S-M-p"          , spawn "passmenu --type"                      ) -- Display password prompt
-         , ("M-r"            , spawn "xmonad --recompile; xmonad --restart" ) -- restart xmonad
          , ("M-w"            , spawn "firefox"                              ) -- launch browser
-         , ("M-e"            , spawn "dolphin"                              ) -- launch file manager
-         , ("C-M-l"          , spawn "xscreensaver-command -lock"           ) -- lock screen
-         , ("C-M-d"          , spawn disableXscreensaver                    ) -- disable xscreensaver
-         , ("C-M-<Delete>"   , spawn "shutdown -r now"                      ) -- reboot
-         , ("C-M-<Insert>"   , spawn "shutdown -h now"                      ) -- poweroff
-         , ("M-S-q"          , io  exitSuccess                              ) -- Exit Xmonad
+         , ("M-e"            , spawn "rox"                                  ) -- launch file manager
+
+         -- Exiting
+         , ("M-r"            , spawn "xmonad --recompile; xmonad --restart" ) -- restart xmonad
          , ("M-q"            , restart "xmonad" True                        )
+         , ("M-C-<Delete>"   , spawn "shutdown -r now"                      ) -- reboot
+         , ("M-C-<Insert>"   , spawn "shutdown -h now"                      ) -- poweroff
+         , ("M-S-q"          , io  exitSuccess                              ) -- Exit Xmonad
          ]
 
     where
