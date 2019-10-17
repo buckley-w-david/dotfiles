@@ -11,3 +11,6 @@ alias gp='git push '
 
 alias got='git '
 alias get='git '
+
+## Generic Aliases
+alias xmonad-config="vim ~/.xmonad/xmonad.hs; xmonad --recompile; xmonad --restart"

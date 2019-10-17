@@ -5,7 +5,8 @@
 - clean: ['~']
 
 - link:
-    ~/.bashrc.common:
+    ~/.bashrc:
+    ~/.bash_profile:
     ~/.editorconfig:
     ~/.gitconfig:
     ~/.gvimrc:
@@ -18,6 +19,14 @@
         create: true
         path: xmonad/xmonad.hs
     ~/.xmobarrc:
+    ~/.local/bashrc.d: 
+      glob: true
+      create: true
+      path: local/bashrc.d/*.sh
+    ~/.local/bash_profile.d: 
+      glob: true
+      create: true
+      path: local/bash_profile.d/*.sh
     ~/.mutt:
         glob: true
         create: true
@@ -27,9 +36,9 @@
       create: true
       path: scripts/*
     ~/.tmuxp:
-        glob: true
-        create: true
-        path: tmuxp/*
+      glob: true
+      create: true
+      path: tmuxp/*
 
 - shell:
   - [git submodule update --init --recursive, Installing submodules]
