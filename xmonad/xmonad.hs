@@ -32,8 +32,10 @@ import XMonad.Util.NamedScratchpad
 onlyOne :: String -> String -> String
 onlyOne proc args = "pidof " ++ proc ++ " || " ++ proc ++ " " ++ args
 
--- Create a new workspace named after the WM_NAME property of the currently focused window, and switch to it
-dynamicWorkspaceFromFocused :: X() 
+-- TODO: DRY this out, try to use the code at https://hackage.haskell.org/package/xmonad-contrib-0.6/docs/src/XMonad-Hooks-DynamicLog.html#dynamicLog
+-- do what's here but better
+-- Create a new workspace named after the WM_NAME property of the currently focused window
+dynamicWorkspaceFromFocused :: X()
 dynamicWorkspaceFromFocused = do ss <- gets windowset
                                  whenJust (W.peek ss) $ \w -> do
                                     wmName <-  withDisplay $ \d -> getStringProperty d w "WM_NAME"
@@ -41,8 +43,18 @@ dynamicWorkspaceFromFocused = do ss <- gets windowset
                                       Just name -> do
                                          addHiddenWorkspace name
                                          windows . W.shift $ name
-                                         windows . W.greedyView $ name
+-- Switch to new window
+dynamicWorkspaceFromFocused' :: X()
+dynamicWorkspaceFromFocused' = do ss <- gets windowset
+                                  whenJust (W.peek ss) $ \w -> do
+                                     wmName <-  withDisplay $ \d -> getStringProperty d w "WM_NAME"
+                                     case wmName of
+                                       Just name -> do
+                                          addHiddenWorkspace name
+                                          windows . W.shift $ name
+                                          windows . W.greedyView $ name
 
+                               
 -- TODO: Create dynamicPropertyChange hooks for each of my workspaces so that anything
 -- with my CUSTOM_TYPE xprop gets moved to it's correct workspace. This is a measure to help prevent
 -- have to list all that various and sundry applications I'd like to move in my xmonad config file
@@ -118,6 +130,7 @@ main = do
          , ("M-v"            , selectWorkspace myXPConfig                   ) -- Create a new dynamic workspace
          , ("M-S-v"          , withWorkspace myXPConfig (windows . W.shift) ) -- Shift current window to workspace
          , ("M-m"            , dynamicWorkspaceFromFocused                  ) -- Create a new dynamic workspace from the name of the currently focused window
+         , ("M-S-m"          , dynamicWorkspaceFromFocused'                 ) -- Create a new dynamic workspace from the name of the currently focused window
          , ("M-<Backspace>"  , removeWorkspace                              ) -- Delete dynamic workspace
          , ("M-S-r"          , renameWorkspace myXPConfig                   ) -- Rename
 
