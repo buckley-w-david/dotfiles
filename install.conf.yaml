@@ -18,6 +18,9 @@
     ~/.xmonad/xmonad.hs: 
         create: true
         path: xmonad/xmonad.hs
+    ~/.xmonad/build: 
+        create: true
+        path: xmonad/build
     ~/.xmobarrc:
     ~/.local/bashrc.d: 
       glob: true
@@ -39,6 +42,10 @@
       glob: true
       create: true
       path: tmuxp/*
+    ~/.xmonad/lib: 
+      glob: true
+      create: true
+      path: xmonad/lib/*
 
 - shell:
   - [git submodule update --init --recursive, Installing submodules]

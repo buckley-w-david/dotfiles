@@ -1,60 +1,56 @@
-import Control.Monad (liftM2)
-import System.IO
-import System.Exit (exitSuccess)
+-- TODO: Clean up imports
+import System.IO                        (hPutStrLn)
+import System.Exit                      (exitSuccess)
 
 import XMonad
-import XMonad.Actions.CopyWindow
-import XMonad.Core (withDisplay)
-import XMonad.Actions.CycleWindows
-import XMonad.Actions.CycleWS
-import XMonad.Actions.SpawnOn
-import XMonad.Actions.DynamicWorkspaces
-import XMonad.Hooks.DynamicLog
-import XMonad.Hooks.DynamicProperty
-import XMonad.Hooks.EwmhDesktops
-import XMonad.Hooks.ManageHelpers (isFullscreen, isDialog, doFullFloat, doCenterFloat, transience')
-import XMonad.Hooks.ManageHelpers
-import XMonad.Hooks.ManageDocks
-import XMonad.Layout.Minimize
-import XMonad.Layout.NoBorders (noBorders, smartBorders)
-import XMonad.Layout.Fullscreen (fullscreenFull, fullscreenSupport)
-import XMonad.Layout.Grid (Grid(..))
-import XMonad.Layout.ResizableTile
-import XMonad.Layout.Tabbed (simpleTabbed)
-import XMonad.Prompt
-import qualified XMonad.StackSet as W -- to shift and float windows
-import XMonad.Util.Dmenu
-import XMonad.Util.EZConfig
-import XMonad.Util.Run(spawnPipe)
-import XMonad.Util.Scratchpad
-import XMonad.Util.NamedScratchpad
+import XMonad.Actions.CopyWindow        (copyToAll, killAllOtherCopies, kill1)
+import XMonad.Actions.CycleWindows      (cycleRecentWindows)
+import XMonad.Actions.CycleWS           (nextWS, prevWS, shiftToNext, shiftToPrev)
+import XMonad.Actions.SpawnOn           (manageSpawn)
+import XMonad.Actions.DynamicWorkspaces (addHiddenWorkspace, selectWorkspace, withWorkspace, removeWorkspace, renameWorkspace)
+import XMonad.Hooks.DynamicLog          (ppOutput, ppTitle, dynamicLogWithPP, xmobarPP, xmobarColor, shorten)
+import XMonad.Hooks.DynamicProperty     (dynamicPropertyChange)
+import XMonad.Hooks.EwmhDesktops        (ewmh, fullscreenEventHook, ewmhDesktopsStartup)
+import XMonad.Hooks.ManageHelpers       (isFullscreen, isDialog, doFullFloat, doCenterFloat, transience')
+import XMonad.Hooks.ManageDocks         (avoidStruts, docks, ToggleStruts(..))
+import XMonad.Layout.NoBorders          (noBorders, smartBorders)
+import XMonad.Layout.Fullscreen         (fullscreenSupport)
+import XMonad.Layout.ResizableTile      (ResizableTall(..))
+import XMonad.Prompt                    (XPConfig(..), XPPosition(..))
+import XMonad.StackSet                  (shift, greedyView)
+import XMonad.Util.EZConfig             (additionalKeysP)
+import XMonad.Util.Run                  (spawnPipe)
+import XMonad.Util.Scratchpad           (scratchpadManageHookDefault)
+import XMonad.Util.NamedScratchpad      (namedScratchpadAction, defaultFloating, NamedScratchpad(..))
 
-onlyOne :: String -> String -> String
-onlyOne proc args = "pidof " ++ proc ++ " || " ++ proc ++ " " ++ args
+import qualified Utils
 
--- TODO: DRY this out, try to use the code at https://hackage.haskell.org/package/xmonad-contrib-0.6/docs/src/XMonad-Hooks-DynamicLog.html#dynamicLog
--- do what's here but better
--- Create a new workspace named after the WM_NAME property of the currently focused window
-dynamicWorkspaceFromFocused :: X()
-dynamicWorkspaceFromFocused = do ss <- gets windowset
-                                 whenJust (W.peek ss) $ \w -> do
-                                    wmName <-  withDisplay $ \d -> getStringProperty d w "WM_NAME"
-                                    case wmName of
-                                      Just name -> do
-                                         addHiddenWorkspace name
-                                         windows . W.shift $ name
+-- TODO: modularize this mess
+
+-- Create a new workspace named after the WM_NAME property of the currently focused window, and yield that name
+dynamicWorkspaceFromFocused :: X (Maybe String)
+dynamicWorkspaceFromFocused = do 
+    name <- Utils.getFocusedWindowProperty "WM_NAME"
+    case name of Nothing -> return ()
+                 Just n -> do
+                     addHiddenWorkspace n
+                     windows . shift $ n
+    return name
+
 -- Switch to new window
-dynamicWorkspaceFromFocused' :: X()
-dynamicWorkspaceFromFocused' = do ss <- gets windowset
-                                  whenJust (W.peek ss) $ \w -> do
-                                     wmName <-  withDisplay $ \d -> getStringProperty d w "WM_NAME"
-                                     case wmName of
-                                       Just name -> do
-                                          addHiddenWorkspace name
-                                          windows . W.shift $ name
-                                          windows . W.greedyView $ name
+dynamicWorkspace :: X ()
+dynamicWorkspace = do
+    dynamicWorkspaceFromFocused
+    return ()
 
-                               
+-- FIXME: Doesn't work right now
+dynamicWorkspaceAndSwitch :: X ()
+dynamicWorkspaceAndSwitch = do
+    name <- dynamicWorkspaceFromFocused
+    case name of Nothing -> return ()
+                 Just n -> do
+                     windows . greedyView $ n
+
 -- TODO: Create dynamicPropertyChange hooks for each of my workspaces so that anything
 -- with my CUSTOM_TYPE xprop gets moved to it's correct workspace. This is a measure to help prevent
 -- have to list all that various and sundry applications I'd like to move in my xmonad config file
@@ -66,15 +62,13 @@ myWorkspaces = ["main", "comms", "media", "dev1", "dev2", "dev3" ,"games", "wiki
 spotifyEventHook = dynamicPropertyChange "WM_NAME" (className =? "Spotify" --> defaultFloating) -- Spotify doesn't set their props before it maps itself, we have to wait for the change dynamically
 gameEventHook = dynamicPropertyChange "CUSTOM_TYPE" (stringProperty "CUSTOM_TYPE" =? "Game" --> doShift "7:games") -- I'd like to not have to explicitly list game stuff, and instead give them a custom xprop that we look for
 
-myLayoutHook = avoidStruts $  full ||| tall -- ||| grid ||| tab 
+myLayoutHook = avoidStruts $ full ||| tall -- ||| grid ||| tab 
   where
    full = noBorders Full
    tall = smartBorders $ ResizableTall 1 (10/100) (1/2) []
-   -- grid = smartBorders Grid
-   -- tab  = smartBorders simpleTabbed
 
 myXPConfig :: XPConfig
-myXPConfig = defaultXPConfig
+myXPConfig = def
               {font        = "xft:Monospace:pixelsize=16"
               , bgColor     = "black"
               , fgColor     = "grey"
@@ -85,14 +79,15 @@ myXPConfig = defaultXPConfig
               }
 
 main = do
-    -- TODO: Fix this janky "onlyOne" solution
-    spawn $ onlyOne "twmnd" ""
-    spawn $ onlyOne "trayer" "--edge top --align right --SetDockType true --SetPartialStrut true --expand true --width 10 --transparent true --tint 0x191970 --height 17"
-    spawn $ onlyOne "xscreensaver" "-no-splash"
-    spawn $ onlyOne "xss-lock" "-- xscreensaver-command -lock"
-    spawn $ onlyOne "scrolld.py" ""
-    spawn $ onlyOne "nm-applet" "--sm-disable"
-    spawn $ onlyOne "xbindkeys" ""
+    -- TODO: Fix this janky "Utils.onlyOne" solution
+    -- Probably just want to throw this stuff in my xinitrc, except xmobar
+    spawn $ Utils.onlyOne "twmnd" ""
+    spawn $ Utils.onlyOne "trayer" "--edge top --align right --SetDockType true --SetPartialStrut true --expand true --width 10 --transparent true --tint 0x191970 --height 17"
+    spawn $ Utils.onlyOne "xscreensaver" "-no-splash"
+    spawn $ Utils.onlyOne "xss-lock" "-- xscreensaver-command -lock"
+    spawn $ Utils.onlyOne "scrolld.py" ""
+    spawn $ Utils.onlyOne "nm-applet" "--sm-disable"
+    spawn $ Utils.onlyOne "xbindkeys" ""
 
     xmproc <- spawnPipe "xmobar /home/david/.xmobarrc"
     xmonad $ ewmh $ fullscreenSupport $ docks def {
@@ -107,10 +102,10 @@ main = do
                                      , className =? "Gimp"            --> doFloat
                                      , className =? "zoom"            --> doFloat
                                      , role      =? "pop-up"          --> doFloat
-                                     , className =? "Steam"	          --> doShift "7:games"
+                                     , className =? "Steam"           --> doShift "7:games"
                                      , className =? "Lutris"          --> doShift "7:games"
-                                     , className =? "discord"	      --> doShift "2:comms"
-                                     , className =? "Thunderbird"	  --> doShift "2:comms"
+                                     , className =? "discord"         --> doShift "2:comms"
+                                     , className =? "Thunderbird"     --> doShift "2:comms"
                                      , transience'
                                      , scratchpadManageHookDefault
                                      ]
@@ -128,9 +123,9 @@ main = do
 
          -- Dynamic Workspace Bindings
          , ("M-v"            , selectWorkspace myXPConfig                   ) -- Create a new dynamic workspace
-         , ("M-S-v"          , withWorkspace myXPConfig (windows . W.shift) ) -- Shift current window to workspace
-         , ("M-m"            , dynamicWorkspaceFromFocused                  ) -- Create a new dynamic workspace from the name of the currently focused window
-         , ("M-S-m"          , dynamicWorkspaceFromFocused'                 ) -- Create a new dynamic workspace from the name of the currently focused window
+         , ("M-S-v"          , withWorkspace myXPConfig (windows . shift) ) -- Shift current window to workspace
+         , ("M-m"            , dynamicWorkspace                             ) -- Create a new dynamic workspace from the name of the currently focused window
+         , ("M-S-m"          , dynamicWorkspaceAndSwitch                    ) -- Create a new dynamic workspace from the name of the currently focused window
          , ("M-<Backspace>"  , removeWorkspace                              ) -- Delete dynamic workspace
          , ("M-S-r"          , renameWorkspace myXPConfig                   ) -- Rename
 
@@ -144,8 +139,8 @@ main = do
          , ("M-c"            , spawn "dmenu_python"                         ) -- Run one-off Python commands
 
          -- Password Manager
-         , ("M-C-p"          , spawn "passmenu2"                            ) -- Display password prompt
-         , ("M-S-p"          , spawn "passmenu2 --type"                     ) -- Display password prompt
+         , ("M-C-p"          , spawn "passmenu"                            ) -- Display password prompt
+         , ("M-S-p"          , spawn "passmenu --type"                     ) -- Display password prompt
 
          -- System Controls
          , ("M-C-d"          , spawn disableXscreensaver                    ) -- disable xscreensaver
@@ -162,7 +157,7 @@ main = do
          , ("M-e"            , spawn "rox"                                  ) -- launch file manager
 
          -- Exiting
-         , ("M-r"            , spawn "xmonad --recompile; xmonad --restart" ) -- restart xmonad
+         , ("M-r"            , spawn "xmonad --recompile && xmonad --restart" ) -- restart xmonad
          , ("M-q"            , restart "xmonad" True                        )
          , ("M-C-<Delete>"   , spawn "shutdown -r now"                      ) -- reboot
          , ("M-C-<Insert>"   , spawn "shutdown -h now"                      ) -- poweroff
