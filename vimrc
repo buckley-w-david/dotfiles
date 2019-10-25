@@ -9,6 +9,9 @@ set nocompatible
 scriptencoding utfs8
 set encoding=utf-8
 
+" Map our leader key to comma
+:let mapleader = ","
+
 " Tired of your wrong shit
 noremap <Left> :echoe "Use h"<CR>
 nnoremap <Right> :echoe "Use l"<CR>
@@ -46,6 +49,7 @@ set splitright
 
 
 syntax enable           " enable syntax processing
+syntax on           " enable syntax processing
 
 " move vertically by visual line
 nnoremap j gj
@@ -100,6 +104,7 @@ Plugin 'francoiscabrol/ranger.vim'
 Plugin 'xuhdev/vim-latex-live-preview'
 Plugin 'dart-lang/dart-vim-plugin'
 Plugin 'thosakwe/vim-flutter'
+Plugin 'neovimhaskell/haskell-vim.git'
 call vundle#end()
 
 " Ale
@@ -118,3 +123,12 @@ let g:prettier#config#semi = 'false'
 
 " Flutter
 " call FlutterMenu()
+
+" haskell-vim
+let g:haskell_enable_quantification = 1   " to enable highlighting of `forall`
+let g:haskell_enable_recursivedo = 1      " to enable highlighting of `mdo` and `rec`
+let g:haskell_enable_arrowsyntax = 1      " to enable highlighting of `proc`
+let g:haskell_enable_pattern_synonyms = 1 " to enable highlighting of `pattern`
+let g:haskell_enable_typeroles = 1        " to enable highlighting of type roles
+let g:haskell_enable_static_pointers = 1  " to enable highlighting of `static`
+let g:haskell_backpack = 1                " to enable highlighting of backpack keywords
