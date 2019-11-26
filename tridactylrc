@@ -1,6 +1,7 @@
 " based on bovine3dom's dogfood
 
 sanitise tridactyllocal tridactylsync
+auconscreatecontainer true
 
 "
 " General Settings
@@ -102,6 +103,8 @@ bind ;C composite hint_focus; !s xdotool key Menu
 " Autocontainers
 "
 
+autocontain youtube.com youtube
+
 "
 " Logging
 "
@@ -112,8 +115,8 @@ bind ;C composite hint_focus; !s xdotool key Menu
 " 
 
 " Go old reddit
-" autocmd DocStart ^http(s?)://www.reddit.com js tri.excmds.urlmodify("-t", "www", "old")
-autocmd DocStart ^http(s?)://www.reddit.com urlmodify -t www old
+autocmd DocStart ^http(s?)://www.reddit.com js tri.excmds.urlmodify("-t", "www", "old")
+" autocmd DocStart ^http(s?)://www.reddit.com urlmodify -t www old
 " Mosquito nets won't make themselves
 " autocmd DocStart ^http(s?)://www.amazon.com js tri.excmds.urlmodify("-t", "www", "smile")
 " Disable Polymer on Youtube - infinite loop :(
