@@ -34,6 +34,20 @@ bind k scrollline -3
 bind ;c hint -Jc [class*="expand"],[class="togg"]
 bind ;u hint -Jc [class*="arrow"]
 
+" Custom mpvsafe
+bind ;V hint -qW js -p tri.excmds.shellescape(JS_ARG).then(url => tri.excmds.exclaim_quiet('~/scripts/mpv/append ' + url))
+
+unbind --mode=normal ;v
+bind ;vv hint -W js -p tri.excmds.shellescape(JS_ARG).then(url => tri.excmds.exclaim_quiet('~/scripts/mpv/append ' + url))
+bind ;vr hint -W js -p tri.excmds.shellescape(JS_ARG).then(url => tri.excmds.exclaim_quiet('~/scripts/mpv/yt-playlist-reverse ' + url))
+bind ;vp hint -W js -p tri.excmds.shellescape(JS_ARG).then(url => tri.excmds.exclaim_quiet('~/scripts/mpv/play-next ' + url))
+bind ;vc hint -W js -p tri.excmds.shellescape(JS_ARG).then(url => tri.excmds.exclaim_quiet('~/scripts/mpv/play-replace ' + url))
+
+" CopyMeThat - I'd like to have `js` execute the javascript directly, but for
+" some reason had trouble getting that to work. Using open is a hack that
+" works
+bind ;n js tri.excmds.open("javascript:(function(){var s=document.createElement('script');p='';if(location.protocol === 'https:'){p='s';} s.setAttribute('src','http'+p+'://button.copymethat.com/static/js/bookmarklet.js?'+new Date().getTime());document.getElementsByTagName('body')[0].appendChild(s);})();")
+
 " Make gu take you back to subreddit from comments
 bindurl reddit.com gu urlparent 3
 
@@ -103,7 +117,7 @@ bind ;C composite hint_focus; !s xdotool key Menu
 " Autocontainers
 "
 
-autocontain youtube.com youtube
+" autocontain youtube.com youtube
 
 "
 " Logging
@@ -122,6 +136,7 @@ autocmd DocStart ^http(s?)://www.reddit.com js tri.excmds.urlmodify("-t", "www",
 " Disable Polymer on Youtube - infinite loop :(
 " autocmd DocStart ^http(s?)://www.youtube.com js tri.excmds.urlmodify("-s", "disable_polymer", "true")
 
+" autocmd DocStart ^http(s?)://www.youtube.com/watch composite get_current_url | js -p tri.excmds.shellescape(JS_ARG).then(url => tri.excmds.exclaim_quiet('~/scripts/mpv-append ' + url))
 " 
 " Other
 "

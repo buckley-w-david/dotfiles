@@ -7,7 +7,7 @@ fi
 
 COUNT=`/usr/bin/newsboat -x print-unread | awk '{print $1}'`
 if [ "$COUNT" != "$content" ]; then
-    sh /home/david/bin/rss-unread.sh > /dev/null 2>&1
+    sh /home/david/scripts/rss-unread.sh > /dev/null 2>&1
 fi
 echo -n ${COUNT} > /tmp/rss-count
 echo ${COUNT}

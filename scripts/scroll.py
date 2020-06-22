@@ -2,7 +2,7 @@
 import socket
 import sys
 
-HOST, PORT = "localhost", 9999
+HOST, PORT = "localhost", 1236
 data_id = sys.argv[1][:3]
 data = " ".join(sys.argv[2:])
 

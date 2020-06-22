@@ -1,0 +1,25 @@
+#!/bin/bash
+
+DEFAULT_SINK=$(pacmd list-sinks | grep '*' | awk '{print $3}')
+SINK=${3:-$DEFAULT_SINK}
+
+op="$1"
+case $op in
+    "up")
+    pactl set-sink-mute $SINK false; pactl set-sink-volume $SINK +5%
+    ;;
+    "down")
+    pactl set-sink-mute $SINK false; pactl set-sink-volume $SINK -5%
+    ;;
+    "toggle")
+    pactl set-sink-mute $SINK toggle
+    ;;
+    "current")
+    current=$(pactl list sinks | perl -000ne "if(/#$SINK/){/(Volume:.*)/; print \"\$1\n\"}" | \
+        sed -e 's,.* \([0-9][0-9]*\)%.*,\1,')
+    echo "$current%"
+    ;;
+    "set")
+    pactl set-sink-mute $SINK false; pactl set-sink-volume $SINK $2
+    ;;
+esac

@@ -1,28 +1,13 @@
 #!/bin/sh
 #
-# As of 0.13, xmonad --recompile will look for a custom build script. This one
-# does the default thing, just via stack exec.
-#
-# borrowed from pbrisbin
-#
-###
-# exec stack ghc \
-#   -- \
-#   --make xmonad.hs \
-#   -i \
-#   -ilib \
-#   -fforce-recomp \
-#   -main-is main \
-#   -v \
-#   -O2 \
-#   -j$(nproc) \
-#   -o "$1"
+# As of 0.13, xmonad --recompile will look for a custom build script.
 
-exec stack ghc -- \
-  --make xmonad.hs \
-  -i \
-  -ilib \
-  -fforce-recomp \
-  -main-is main \
-  -v0 \
-  -o "$1"
+set -e
+
+echo "STARTING BUILD"
+stack build :my-xmonad --verbosity warn
+echo "DONE BUILD"
+echo "STARTING INSTALL"
+stack install :my-xmonad --local-bin-path bin/ --verbosity warn
+echo "DONE INSTALL"
+mv bin/my-xmonad "$1"

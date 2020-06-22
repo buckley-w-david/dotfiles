@@ -1,0 +1,12 @@
+[Unit]
+Description=twmn notifications service
+PartOf=graphical-session.target
+
+[Service]
+Type=dbus
+BusName=org.freedesktop.Notifications
+ExecStart=/usr/bin/twmnd
+
+[Install]
+WantedBy=xsession.target
+

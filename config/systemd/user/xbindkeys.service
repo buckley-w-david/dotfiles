@@ -1,0 +1,10 @@
+[Unit]
+Description=xbindkeys
+PartOf=graphical-session.target
+
+[Service]
+ExecStart=/usr/bin/xbindkeys -n -f ${HOME}/.xbindkeysrc
+Restart=always
+
+[Install]
+WantedBy=xsession.target

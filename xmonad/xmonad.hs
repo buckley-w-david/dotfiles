@@ -1,71 +1,155 @@
--- TODO: Clean up imports
+------------------------------------------------------------------------
+-- IMPORTS
+------------------------------------------------------------------------
+    -- Base
+import XMonad
 import System.IO                        (hPutStrLn)
 import System.Exit                      (exitSuccess)
 
-import XMonad
+    -- Actions
 import XMonad.Actions.CopyWindow        (copyToAll, killAllOtherCopies, kill1)
 import XMonad.Actions.CycleWindows      (cycleRecentWindows)
 import XMonad.Actions.CycleWS           (nextWS, prevWS, shiftToNext, shiftToPrev)
 import XMonad.Actions.SpawnOn           (manageSpawn)
 import XMonad.Actions.DynamicWorkspaces (addHiddenWorkspace, selectWorkspace, withWorkspace, removeWorkspace, renameWorkspace)
-import XMonad.Hooks.DynamicLog          (ppOutput, ppTitle, dynamicLogWithPP, xmobarPP, xmobarColor, shorten)
+
+    -- Hooks
+import XMonad.Hooks.DynamicLog          (dynamicLogWithPP, ppOutput, ppTitle, ppCurrent, ppVisible, xmobarPP, xmobarColor, shorten, wrap)
 import XMonad.Hooks.DynamicProperty     (dynamicPropertyChange)
-import XMonad.Hooks.EwmhDesktops        (ewmh, fullscreenEventHook, ewmhDesktopsStartup)
+import XMonad.Hooks.EwmhDesktops        (ewmh, ewmhDesktopsEventHook, ewmhDesktopsStartup)
 import XMonad.Hooks.ManageHelpers       (isFullscreen, isDialog, doFullFloat, doCenterFloat, transience')
 import XMonad.Hooks.ManageDocks         (avoidStruts, docks, ToggleStruts(..))
+
+    -- Layout
 import XMonad.Layout.NoBorders          (noBorders, smartBorders)
-import XMonad.Layout.Fullscreen         (fullscreenSupport)
 import XMonad.Layout.ResizableTile      (ResizableTall(..))
+
+
+    -- Prompt
 import XMonad.Prompt                    (XPConfig(..), XPPosition(..))
+
+    -- StackSet
 import XMonad.StackSet                  (shift, greedyView)
+
+    -- Utils
 import XMonad.Util.EZConfig             (additionalKeysP)
 import XMonad.Util.Run                  (spawnPipe)
 import XMonad.Util.Scratchpad           (scratchpadManageHookDefault)
 import XMonad.Util.NamedScratchpad      (namedScratchpadAction, defaultFloating, NamedScratchpad(..))
+import XMonad.Util.SpawnOnce
 
+    -- Custom
 import qualified Utils
 
+------------------------------------------------------------------------
+-- Dynamic Workspace Functions
+------------------------------------------------------------------------
 -- TODO: modularize this mess
-
 -- Create a new workspace named after the WM_NAME property of the currently focused window, and yield that name
 dynamicWorkspaceFromFocused :: X (Maybe String)
 dynamicWorkspaceFromFocused = do 
-    name <- Utils.getFocusedWindowProperty "WM_NAME"
-    case name of Nothing -> return ()
+    focusedWorkspaceName <- Utils.getFocusedWindowProperty "WM_NAME"
+    case focusedWorkspaceName of 
+                 Nothing -> return ()
                  Just n -> do
                      addHiddenWorkspace n
                      windows . shift $ n
-    return name
+    return focusedWorkspaceName
 
 -- Switch to new window
 dynamicWorkspace :: X ()
 dynamicWorkspace = do
-    dynamicWorkspaceFromFocused
+    _ <- dynamicWorkspaceFromFocused
     return ()
 
 -- FIXME: Doesn't work right now
 dynamicWorkspaceAndSwitch :: X ()
 dynamicWorkspaceAndSwitch = do
-    name <- dynamicWorkspaceFromFocused
-    case name of Nothing -> return ()
+    focusedWorkspaceName <- dynamicWorkspaceFromFocused
+    case focusedWorkspaceName of 
+                 Nothing -> return ()
                  Just n -> do
                      windows . greedyView $ n
 
+
+
+------------------------------------------------------------------------
+-- VARIABLES
+------------------------------------------------------------------------
+
+myModMask :: KeyMask
+myModMask = mod4Mask       -- Sets modkey to super/windows ke
+
+myTerminal :: String
+myTerminal = "terminte"       -- Sets modkey to super/windows ke
+
+myFocusFollowsMouse :: Bool
+myFocusFollowsMouse = False
+
+------------------------------------------------------------------------
+-- AUTOSTART
+------------------------------------------------------------------------
+myStartupHook :: X ()
+myStartupHook = do
+    ewmhDesktopsStartup
+    spawnOnce "nm-applet --sm-disable &"
+    spawnOnce "trayer --edge top --align right --SetDockType true --SetPartialStrut true --expand true --width 10 --transparent true --tint 0x191970 --height 17 &"
+    spawnOnce "xss-lock --xscreensaver-command -lock &"
+    spawnOnce "xscreensaver -no-splash &"
+
+
+-- WORKSPACES
+------------------------------------------------------------------------
 -- TODO: Create dynamicPropertyChange hooks for each of my workspaces so that anything
 -- with my CUSTOM_TYPE xprop gets moved to it's correct workspace. This is a measure to help prevent
 -- have to list all that various and sundry applications I'd like to move in my xmonad config file
 -- makeDynamicPropertyChange
-
-myWorkspaces = ["main", "comms", "media", "dev1", "dev2", "dev3" ,"games", "wiki", "launchers"] 
-
+myWorkspaceNames = ["main", "comms", "media", "dev1", "dev2", "dev3" ,"games", "wiki", "launchers"] 
+myWorkspaces = map ( \(x, y) -> show (x::Int) ++ ":" ++ y) (zip [1..] myWorkspaceNames)
 -- myWorkspaceHooks = map makeDynamicPropertyChange myWorkspaces
-spotifyEventHook = dynamicPropertyChange "WM_NAME" (className =? "Spotify" --> defaultFloating) -- Spotify doesn't set their props before it maps itself, we have to wait for the change dynamically
-gameEventHook = dynamicPropertyChange "CUSTOM_TYPE" (stringProperty "CUSTOM_TYPE" =? "Game" --> doShift "7:games") -- I'd like to not have to explicitly list game stuff, and instead give them a custom xprop that we look for
 
+
+------------------------------------------------------------------------
+-- LAYOUTS
+------------------------------------------------------------------------
 myLayoutHook = avoidStruts $ full ||| tall -- ||| grid ||| tab 
   where
    full = noBorders Full
    tall = smartBorders $ ResizableTall 1 (10/100) (1/2) []
+
+
+------------------------------------------------------------------------
+-- MANAGEHOOK
+------------------------------------------------------------------------
+myManageHook = manageSpawn <+> composeAll [ isFullscreen   --> doFullFloat
+                                     , isDialog                       --> doCenterFloat
+                                     , className =? "Gimp"            --> doFloat
+                                     , className =? "zoom"            --> doFloat
+                                     , role      =? "pop-up"          --> doFloat
+                                     , className =? "Steam"           --> doShift "7:games"
+                                     , className =? "Lutris"          --> doShift "7:games"
+                                     , className =? "discord"         --> doShift "2:comms"
+                                     , className =? "Ripcord"         --> doShift "2:comms"
+                                     , className =? "Thunderbird"     --> doShift "2:comms"
+                                     , transience'
+                                     , scratchpadManageHookDefault
+                                     ]
+    where
+      role = stringProperty "WM_WINDOW_ROLE"
+
+
+------------------------------------------------------------------------
+-- EVENTHOOK
+------------------------------------------------------------------------
+spotifyEventHook = dynamicPropertyChange "WM_NAME" (className =? "Spotify" --> defaultFloating) -- Spotify doesn't set their props before it maps itself, we have to wait for the change dynamically
+gameEventHook = dynamicPropertyChange "CUSTOM_TYPE" (stringProperty "CUSTOM_TYPE" =? "Game" --> doShift "7:games") -- I'd like to not have to explicitly list game stuff, and instead give them a custom xprop that we look for
+
+myEventHooks = handleEventHook def <+> spotifyEventHook <+> gameEventHook <+> ewmhDesktopsEventHook  -- <+> fullscreenEventHook -- I like this "bug" https://github.com/xmonad/xmonad-contrib/issues/183
+
+
+------------------------------------------------------------------------
+-- XPROMPT SETTINGS
+------------------------------------------------------------------------
 
 myXPConfig :: XPConfig
 myXPConfig = def
@@ -78,42 +162,21 @@ myXPConfig = def
               , position    = Top
               }
 
-main = do
-    -- TODO: Fix this janky "Utils.onlyOne" solution
-    -- Probably just want to throw this stuff in my xinitrc, except xmobar
-    spawn $ Utils.onlyOne "twmnd" ""
-    spawn $ Utils.onlyOne "trayer" "--edge top --align right --SetDockType true --SetPartialStrut true --expand true --width 10 --transparent true --tint 0x191970 --height 17"
-    spawn $ Utils.onlyOne "xscreensaver" "-no-splash"
-    spawn $ Utils.onlyOne "xss-lock" "-- xscreensaver-command -lock"
-    spawn $ Utils.onlyOne "scrolld.py" ""
-    spawn $ Utils.onlyOne "nm-applet" "--sm-disable"
-    spawn $ Utils.onlyOne "xbindkeys" ""
+------------------------------------------------------------------------
+-- SCRATCHPADS
+------------------------------------------------------------------------
+myScratchPads = [
+                      NS "spotify" "spotify" (className =? "Spotify") defaultFloating
+                    , NS "termite" "termite --name scratchpad" (appName =? "scratchpad") defaultFloating
+                    ]
 
-    xmproc <- spawnPipe "xmobar /home/david/.xmobarrc"
-    xmonad $ ewmh $ fullscreenSupport $ docks def {
-      modMask           = mod4Mask -- use the Windows button as mod
-    , focusFollowsMouse = False
-    , terminal          = "termite"
-    , logHook           = dynamicLogWithPP xmobarPP 
-                                  { ppOutput = hPutStrLn xmproc 
-                                  , ppTitle = xmobarColor "green" "" . shorten 50}
-    , manageHook        = manageSpawn <+> composeAll [ isFullscreen   --> doFullFloat
-                                     , isDialog                       --> doCenterFloat
-                                     , className =? "Gimp"            --> doFloat
-                                     , className =? "zoom"            --> doFloat
-                                     , role      =? "pop-up"          --> doFloat
-                                     , className =? "Steam"           --> doShift "7:games"
-                                     , className =? "Lutris"          --> doShift "7:games"
-                                     , className =? "discord"         --> doShift "2:comms"
-                                     , className =? "Thunderbird"     --> doShift "2:comms"
-                                     , transience'
-                                     , scratchpadManageHookDefault
-                                     ]
-    , handleEventHook   = spotifyEventHook <+> gameEventHook <+> handleEventHook def <+> fullscreenEventHook
-    , layoutHook  = myLayoutHook
-    , startupHook = ewmhDesktopsStartup
-    , workspaces = map ( \(x, y) -> show x ++ ":" ++ y) (zip [1..] myWorkspaces)
-    } `additionalKeysP` [ ("M-b"          , sendMessage ToggleStruts              ) -- toggle the status bar gap
+
+------------------------------------------------------------------------
+-- KEYBINDINGS
+------------------------------------------------------------------------
+-- I am using the Xmonad.Util.EZConfig module which allows keybindings
+-- to be written in simpler, emacs-like format.
+myKeys = [ ("M-b"          , sendMessage ToggleStruts              ) -- toggle the status bar gap
          -- Workspace Bindings
          , ("M-<Tab>"        , cycleRecentWindows [xK_Alt_L] xK_Tab xK_Tab  ) -- classic alt-tab behaviour
          , ("M-<Right>"      , nextWS                                       ) -- go to next workspace
@@ -144,17 +207,25 @@ main = do
 
          -- System Controls
          , ("M-C-d"          , spawn disableXscreensaver                    ) -- disable xscreensaver
-         , ("M-<Page_Up>"    , spawn "pulseaudio-ctl up"                    ) -- Volume up 5%
-         , ("M-<Page_Down>"  , spawn "pulseaudio-ctl down"                  ) -- Volume down 5%
-         , ("M-S-m"          , spawn "pulseaudio-ctl mute"                  ) -- Volume down 5%
          , ("M-C-l"          , spawn "xscreensaver-command -lock"           ) -- lock screen
 
+         -- Media Controls
+         , ("<XF86AudioMute>"         , spawn "/home/david/scripts/vol-ctl toggle")
+         , ("<XF86AudioRaiseVolume>"  , spawn "/home/david/scripts/vol-ctl up")
+         , ("<XF86AudioLowerVolume>"  , spawn "/home/david/scripts/vol-ctl down")
+         , ("<XF86AudioNext>"         , spawn "dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotifyd /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.Next")
+         , ("<XF86AudioPrev>"         , spawn "dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotifyd /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.Previous")
+         , ("<XF86AudioStop>"         , spawn "dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotifyd /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.Stop")
+         , ("<XF86AudioPlay>"         , spawn "dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotifyd /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.PlayPause") 
+
          -- Applications
-         , ("<Print>"        , spawn "spectacle"                            ) -- Screenshot
-         , ("M-S-s"          , namedScratchpadAction scratchpads "spotify"  ) -- Spawn a scratchpad with spotify
-         , ("M-<F12>"        , namedScratchpadAction scratchpads "termite"  ) -- Spawn a scratchpad with termite
+         , ("<Print>"        , spawn "maim -s | xclip -selection clipboard -t image/png"                            ) -- Screenshot
+         , ("M-<Print>"      , spawn "maim -i $((16#$(xwininfo | grep \"Window id\" | awk '{print $4}' | cut -c3-))) ~/Pictures/Screenshots/$(date +%s).png" ) -- Screenshot
+         , ("M-S-s"          , namedScratchpadAction myScratchPads "spotify"  ) -- Spawn a scratchpad with spotify
+         , ("M-<F12>"        , namedScratchpadAction myScratchPads "termite"  ) -- Spawn a scratchpad with termite
          , ("M-w"            , spawn "firefox"                              ) -- launch browser
-         , ("M-e"            , spawn "rox"                                  ) -- launch file manager
+         -- , ("M-e"            , spawn "rox"                                  ) -- launch file manager
+         , ("M-e"            , spawn "termite -e 'vifm'"                    ) -- launch file manager
 
          -- Exiting
          , ("M-r"            , spawn "xmonad --recompile && xmonad --restart" ) -- restart xmonad
@@ -165,10 +236,30 @@ main = do
          ]
 
     where
-      role = stringProperty "WM_WINDOW_ROLE"
       disableXscreensaver = "sed -i 's/mode:\\s*off/\\x0/g; s/mode:\\s*one/mode:\\t\\toff/g; s/\\x0/mode:\\t\\tone/g' ~/.xscreensaver"
-      scratchpads = [
-                      NS "spotify" "spotify" (className =? "Spotify") defaultFloating
-                    , NS "termite" "termite --name scratchpad" (appName =? "scratchpad") defaultFloating
-                    ]
-     
+
+
+------------------------------------------------------------------------
+-- MAIN
+------------------------------------------------------------------------
+main :: IO ()
+main = do
+    xmproc0 <- spawnPipe "xmobar -x 0 /home/david/.xmobarrc0"
+    xmproc1 <- spawnPipe "xmobar -x 1 /home/david/.xmobarrc1"
+
+    xmonad $ ewmh $ docks $ def {
+      modMask           = myModMask
+    , focusFollowsMouse = myFocusFollowsMouse
+    , terminal          = myTerminal
+    , startupHook = myStartupHook
+    , logHook = dynamicLogWithPP $ xmobarPP 
+                    { ppOutput = \x -> hPutStrLn xmproc0 x  >> hPutStrLn xmproc1 x
+                    , ppTitle = xmobarColor "green" "" . shorten 50
+                    , ppCurrent = xmobarColor "white" "" . wrap "<" ">"
+                    , ppVisible = wrap "[" "]" 
+                    }
+    , manageHook = myManageHook 
+    , handleEventHook  = myEventHooks
+    , layoutHook  = myLayoutHook
+    , workspaces = myWorkspaces
+    } `additionalKeysP` myKeys     

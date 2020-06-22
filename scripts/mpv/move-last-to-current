@@ -1,0 +1,9 @@
+#!/usr/bin/bash
+
+current=$(echo '{ "command": ["get_property", "playlist-pos"] }' | socat - /tmp/mpvsocket | jq .data)
+count=$(echo '{ "command": ["get_property", "playlist/count"] }' | socat - /tmp/mpvsocket | jq .data)
+
+target=$((count-1))
+
+echo "{ \"command\": [\"playlist-move\", \"$target\", \"$current\"] }" | socat - /tmp/mpvsocket
+echo "Moved entry: $target to positon $current"

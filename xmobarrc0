@@ -2,29 +2,24 @@ Config { font = "-*-Fixed-Bold-R-Normal-*-12-*-*-*-*-*-*-*"
        , bgColor = "black"
        , fgColor = "grey"
        , position = TopW L 90
+       , allDesktops = True
        , commands = [ Run Cpu ["-L","3","-H","50","--normal","green","--high","red"] 10
-                    , Run Memory ["-t","Mem: <usedratio>%"] 10
-                    , Run Swap [] 10
                     , Run Date "%a %b %_d %l:%M" "date" 10
                     , Run StdinReader
-                    , Run Com "/home/david/scripts/rss.sh" [] "rss" 10
                     , Run Com "/home/david/scripts/updates.sh" [] "pacman" 100
                     , Run Com "/home/david/scripts/screensaver.sh" [] "screensaver" 10
-                    , Run Com "/home/david/scripts/scroll.py" ["rss", "30"] "scroll" 1
-                    , Run Com "pulseaudio-ctl" ["current"] "volume" 5
+                    , Run Com "/home/david/scripts/vol-ctl" ["current"] "volume" 5
                     ]
        , sepChar = "%"
        , alignSep = "}{"
        , template = "%StdinReader% \
-                    \| <action=`termite -e newsboat` button=1>Articles: %rss% - %scroll%</action> \
                     \| Updates: %pacman% \
                     \}{\
                     \ <action=`sed -i 's/mode:\s*off/\x0/g; s/mode:\s*one/mode:\t\toff/g; s/\x0/mode:\t\tone/g' ~/.xscreensaver` button=1>Screensaver: %screensaver%</action> \
                     \| <action=`termite -e 'htop -s PERCENT_CPU'` button=1>%cpu%</action> \
-                    \| <action=`termite -e 'htop -s PERCENT_MEM'` button=1>%memory% * %swap%</action>  \
-                    \| <action=`pulseaudio-ctl down` button=1>-</action>\
-                    \ <action=`pulseeffects` button=1>%volume%</action>\
-                    \ <action=`pulseaudio-ctl up` button=1>+</action> \
+                    \| <action=`/home/david/scripts/vol-ctl down` button=1>-</action>\
+                    \ <action=`/home/david/scripts/vol-ctl toggle` button=1>%volume%</action>\
+                    \ <action=`/home/david/scripts/vol-ctl up` button=1>+</action> \
                     \| <action=`gsimplecal` button=1><fc=#ee9a00>%date%</fc></action> \
                     \| <action=`DISPLAY=:0 xdotool key 'Super_L+b'` button=1><fc=#ff0000>X</fc></action> "
        }

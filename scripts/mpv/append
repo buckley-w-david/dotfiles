@@ -1,0 +1,13 @@
+#!/usr/bin/bash
+
+systemctl --user is-active --quiet mpv
+if [ $? != "0" ]; then
+    systemctl --user start mpv
+    sleep 5 # Wish I didn't have to do this
+fi
+
+for vid in $@
+do
+    echo "{ \"command\": [\"loadfile\", \"$vid\", \"append-play\"] }" | socat - /tmp/mpvsocket
+    echo "Added $vid"
+done

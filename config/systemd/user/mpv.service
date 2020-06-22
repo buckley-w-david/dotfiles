@@ -1,0 +1,12 @@
+[Unit]
+Description=A free, open source, and cross-platform media player
+Documentation=https://mpv.io/manual/
+After=multi-user.target
+
+[Service]
+ExecStart=/usr/bin/mpv --vo=gpu --input-ipc-server='/tmp/mpvsocket' --idle --quiet
+Restart=always
+RestartSec=12
+
+[Install]
+WantedBy=custom.target

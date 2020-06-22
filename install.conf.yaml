@@ -15,13 +15,20 @@
     ~/.tmux.conf:
     ~/.tridactylrc:
     ~/.vimrc:
+    ~/.xinitrc:
+    ~/.xmobarrc0:
+    ~/.xmobarrc1:
+    ~/.xmonad.desktop:
     ~/.xmonad/xmonad.hs: 
         create: true
         path: xmonad/xmonad.hs
     ~/.xmonad/build: 
         create: true
         path: xmonad/build
-    ~/.xmobarrc:
+    ~/.config/termite: 
+      glob: true
+      create: true
+      path: config/termite/*
     ~/.local/bashrc.d: 
       glob: true
       create: true
@@ -30,10 +37,14 @@
       glob: true
       create: true
       path: local/bash_profile.d/*.sh
+    ~/.local/profile.d: 
+      glob: true
+      create: true
+      path: local/profile.d/*.sh
     ~/.mutt:
-        glob: true
-        create: true
-        path: mutt/*
+      glob: true
+      create: true
+      path: mutt/*
     ~/scripts: 
       glob: true
       create: true
@@ -52,4 +63,7 @@
       path: xmonad/lib/*
 
 - shell:
-  - [git submodule update --init --recursive, Installing submodules]
+  - [ git submodule update --init --recursive, Installing submodules ]
+  - 
+    command: "find config/systemd/user -maxdepth 1 -type f -exec systemctl --user link {} \\;"
+    description: link user systemd unit files

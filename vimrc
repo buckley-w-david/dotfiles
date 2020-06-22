@@ -71,6 +71,7 @@ command Wq wq
 
 command GST terminal ++close gst % -
 
+color slate-with-skyblue-comments
 
 """"""""""""""""""""""""
 " Plugin Configuration "
