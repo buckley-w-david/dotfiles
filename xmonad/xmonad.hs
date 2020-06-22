@@ -42,6 +42,17 @@ import XMonad.Util.SpawnOnce
 import qualified Utils
 
 ------------------------------------------------------------------------
+-- TODO
+------------------------------------------------------------------------
+-- Pillage the following configs
+--   - https://gitlab.com/dwt1/dotfiles/blob/master/.xmonad/xmonad.hs
+--   - https://github.com/altercation/dotfiles-tilingwm/blob/master/.xmonad/xmonad.hs
+--   - https://github.com/quarkQuark/dotfiles/blob/master/.config/xmonad/src/xmonad.hs
+--   - https://github.com/hallettj/dot-xmonad/blob/master/home/.xmonad/xmonad.hs
+--
+-- Check out Dynamic Projects: https://hackage.haskell.org/package/xmonad-contrib-0.13/docs/XMonad-Actions-DynamicProjects.html
+
+------------------------------------------------------------------------
 -- Dynamic Workspace Functions
 ------------------------------------------------------------------------
 -- TODO: modularize this mess
