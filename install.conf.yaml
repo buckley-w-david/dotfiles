@@ -25,6 +25,12 @@
     ~/.xmonad/build: 
         create: true
         path: xmonad/build
+    ~/.xmonad/stack.yaml: 
+        create: true
+        path: xmonad/stack.yaml
+    ~/.xmonad/my-xmonad.cabal: 
+        create: true
+        path: xmonad/my-xmonad.cabal
     ~/.config/termite: 
       glob: true
       create: true
