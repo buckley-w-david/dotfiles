@@ -1,5 +1,7 @@
 #!/usr/bin/bash
 
 playlist=$1
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+cd "$DIR"
 
 youtube-dl -j --flat-playlist "$1" | jq -r '.id' | sed 's_^_https://youtu.be/_' | tac | xargs -I{} ./append {}
