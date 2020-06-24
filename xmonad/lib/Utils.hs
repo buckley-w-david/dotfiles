@@ -1,12 +1,10 @@
-module Utils( onlyOne
-            , reverseArgs3
-            , getFocusedWindowProperty
-            )
+module Utils( dynamicWorkspaceFromFocused )
                 where
 
-import XMonad (X, getStringProperty, gets)
+import XMonad (X, getStringProperty, gets, windows)
 import XMonad.Core (withDisplay, windowset)
-import XMonad.StackSet (peek)
+import XMonad.Actions.DynamicWorkspaces (addHiddenWorkspace)
+import XMonad.StackSet (peek, shift)
 
 -- Get the WM_NAME of the window that is in focus
 getFocusedWindowProperty :: String -> X (Maybe String)
@@ -18,12 +16,18 @@ getFocusedWindowProperty prop = do
     case win of Nothing -> return Nothing
                 Just w -> getName w
 
--- TODO: Get rid of this stupid thing
-onlyOne :: String -> String -> String
-onlyOne proc args = "pidof " ++ proc ++ " || " ++ proc ++ " " ++ args
-
 reverseArgs3 :: (a -> b -> c -> d) -> (c -> b -> a -> d)
 reverseArgs3 f = g
     where g a b c = f c b a
+
+dynamicWorkspaceFromFocused :: X (Maybe String)
+dynamicWorkspaceFromFocused = do 
+    focusedWorkspaceName <- Utils.getFocusedWindowProperty "WM_NAME"
+    case focusedWorkspaceName of 
+                 Nothing -> return ()
+                 Just n -> do
+                     addHiddenWorkspace n
+                     windows . shift $ n
+    return focusedWorkspaceName
 
 

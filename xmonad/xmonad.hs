@@ -9,12 +9,12 @@ import System.Exit                      (exitSuccess)
     -- Actions
 import XMonad.Actions.CopyWindow        (copyToAll, killAllOtherCopies, kill1)
 import XMonad.Actions.CycleWindows      (cycleRecentWindows)
-import XMonad.Actions.CycleWS           (nextWS, prevWS, shiftToNext, shiftToPrev)
+import XMonad.Actions.CycleWS           (nextWS, prevWS, shiftToNext, shiftToPrev, nextScreen, prevScreen)
 import XMonad.Actions.SpawnOn           (manageSpawn)
-import XMonad.Actions.DynamicWorkspaces (addHiddenWorkspace, selectWorkspace, withWorkspace, removeWorkspace, renameWorkspace)
+import XMonad.Actions.DynamicWorkspaces (selectWorkspace, withWorkspace, removeWorkspace, renameWorkspace)
 
     -- Hooks
-import XMonad.Hooks.DynamicLog          (dynamicLogWithPP, ppOutput, ppTitle, ppCurrent, ppVisible, xmobarPP, xmobarColor, shorten, wrap)
+import XMonad.Hooks.DynamicLog          (dynamicLogWithPP, ppOutput, ppTitle, ppCurrent, ppVisible, ppHidden, ppHiddenNoWindows, ppSep, ppUrgent, ppExtras, ppOrder, xmobarPP, xmobarColor, shorten, wrap)
 import XMonad.Hooks.DynamicProperty     (dynamicPropertyChange)
 import XMonad.Hooks.EwmhDesktops        (ewmh, ewmhDesktopsEventHook, ewmhDesktopsStartup)
 import XMonad.Hooks.ManageHelpers       (isFullscreen, isDialog, doFullFloat, doCenterFloat, transience')
@@ -29,7 +29,7 @@ import XMonad.Layout.ResizableTile      (ResizableTall(..))
 import XMonad.Prompt                    (XPConfig(..), XPPosition(..))
 
     -- StackSet
-import XMonad.StackSet                  (shift, greedyView)
+import XMonad.StackSet                  (shift, greedyView, integrate', stack, workspace, current)
 
     -- Utils
 import XMonad.Util.EZConfig             (additionalKeysP)
@@ -55,34 +55,20 @@ import qualified Utils
 ------------------------------------------------------------------------
 -- Dynamic Workspace Functions
 ------------------------------------------------------------------------
--- TODO: modularize this mess
 -- Create a new workspace named after the WM_NAME property of the currently focused window, and yield that name
-dynamicWorkspaceFromFocused :: X (Maybe String)
-dynamicWorkspaceFromFocused = do 
-    focusedWorkspaceName <- Utils.getFocusedWindowProperty "WM_NAME"
-    case focusedWorkspaceName of 
-                 Nothing -> return ()
-                 Just n -> do
-                     addHiddenWorkspace n
-                     windows . shift $ n
-    return focusedWorkspaceName
-
--- Switch to new window
 dynamicWorkspace :: X ()
 dynamicWorkspace = do
-    _ <- dynamicWorkspaceFromFocused
+    _ <- Utils.dynamicWorkspaceFromFocused
     return ()
 
--- FIXME: Doesn't work right now
+-- Switch to the new workspace
 dynamicWorkspaceAndSwitch :: X ()
 dynamicWorkspaceAndSwitch = do
-    focusedWorkspaceName <- dynamicWorkspaceFromFocused
+    focusedWorkspaceName <- Utils.dynamicWorkspaceFromFocused
     case focusedWorkspaceName of 
                  Nothing -> return ()
                  Just n -> do
                      windows . greedyView $ n
-
-
 
 ------------------------------------------------------------------------
 -- VARIABLES
@@ -92,10 +78,13 @@ myModMask :: KeyMask
 myModMask = mod4Mask       -- Sets modkey to super/windows ke
 
 myTerminal :: String
-myTerminal = "terminte"       -- Sets modkey to super/windows ke
+myTerminal = "/usr/bin/termite"
 
 myFocusFollowsMouse :: Bool
 myFocusFollowsMouse = False
+
+windowCount :: X (Maybe String)
+windowCount = gets $ Just . show . length . integrate' . stack . workspace . current . windowset
 
 ------------------------------------------------------------------------
 -- AUTOSTART
@@ -109,6 +98,7 @@ myStartupHook = do
     spawnOnce "xscreensaver -no-splash &"
 
 
+------------------------------------------------------------------------
 -- WORKSPACES
 ------------------------------------------------------------------------
 -- TODO: Create dynamicPropertyChange hooks for each of my workspaces so that anything
@@ -155,7 +145,7 @@ myManageHook = manageSpawn <+> composeAll [ isFullscreen   --> doFullFloat
 spotifyEventHook = dynamicPropertyChange "WM_NAME" (className =? "Spotify" --> defaultFloating) -- Spotify doesn't set their props before it maps itself, we have to wait for the change dynamically
 gameEventHook = dynamicPropertyChange "CUSTOM_TYPE" (stringProperty "CUSTOM_TYPE" =? "Game" --> doShift "7:games") -- I'd like to not have to explicitly list game stuff, and instead give them a custom xprop that we look for
 
-myEventHooks = handleEventHook def <+> spotifyEventHook <+> gameEventHook <+> ewmhDesktopsEventHook  -- <+> fullscreenEventHook -- I like this "bug" https://github.com/xmonad/xmonad-contrib/issues/183
+myEventHooks = handleEventHook def <+> spotifyEventHook <+> gameEventHook <+> ewmhDesktopsEventHook
 
 
 ------------------------------------------------------------------------
@@ -194,6 +184,9 @@ myKeys = [ ("M-b"          , sendMessage ToggleStruts              ) -- toggle t
          , ("M-<Left>"       , prevWS                                       ) -- go to prev workspace
          , ("M-S-<Right>"    , shiftToNext                                  ) -- move client to next workspace
          , ("M-S-<Left>"     , shiftToPrev                                  ) -- move client to prev workspace
+         , ("M-."            , nextScreen                                   ) -- Switch focus to next monitor
+         , ("M-,"            , prevScreen                                   ) -- Switch focus to prev monitor
+
 
          -- Dynamic Workspace Bindings
          , ("M-v"            , selectWorkspace myXPConfig                   ) -- Create a new dynamic workspace
@@ -224,6 +217,7 @@ myKeys = [ ("M-b"          , sendMessage ToggleStruts              ) -- toggle t
          , ("<XF86AudioMute>"         , spawn "/home/david/scripts/vol-ctl toggle")
          , ("<XF86AudioRaiseVolume>"  , spawn "/home/david/scripts/vol-ctl up")
          , ("<XF86AudioLowerVolume>"  , spawn "/home/david/scripts/vol-ctl down")
+         -- TODO These should probably be more general
          , ("<XF86AudioNext>"         , spawn "dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotifyd /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.Next")
          , ("<XF86AudioPrev>"         , spawn "dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotifyd /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.Previous")
          , ("<XF86AudioStop>"         , spawn "dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotifyd /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.Stop")
@@ -235,8 +229,8 @@ myKeys = [ ("M-b"          , sendMessage ToggleStruts              ) -- toggle t
          , ("M-S-s"          , namedScratchpadAction myScratchPads "spotify"  ) -- Spawn a scratchpad with spotify
          , ("M-<F12>"        , namedScratchpadAction myScratchPads "termite"  ) -- Spawn a scratchpad with termite
          , ("M-w"            , spawn "firefox"                              ) -- launch browser
-         -- , ("M-e"            , spawn "rox"                                  ) -- launch file manager
-         , ("M-e"            , spawn "termite -e 'vifm'"                    ) -- launch file manager
+         , ("M-e"            , spawn "rox"                                  ) -- launch file manager
+         -- , ("M-e"            , spawn "termite -e 'vifm'"                    ) -- launch file manager
 
          -- Exiting
          , ("M-r"            , spawn "xmonad --recompile && xmonad --restart" ) -- restart xmonad
@@ -265,9 +259,15 @@ main = do
     , startupHook = myStartupHook
     , logHook = dynamicLogWithPP $ xmobarPP 
                     { ppOutput = \x -> hPutStrLn xmproc0 x  >> hPutStrLn xmproc1 x
-                    , ppTitle = xmobarColor "green" "" . shorten 50
-                    , ppCurrent = xmobarColor "white" "" . wrap "<" ">"
-                    , ppVisible = wrap "[" "]" 
+                    , ppCurrent = xmobarColor "#c3e88d" "" . wrap "[" "]" -- Current workspace in xmobar
+                    , ppTitle = xmobarColor "#d0d0d0" "" . shorten 60     -- Title of active window in xmobar
+                    , ppVisible = xmobarColor "#c3e88d" ""                -- Visible but not current workspace
+                    , ppHidden = xmobarColor "#82AAFF" "" . wrap "*" ""   -- Hidden workspaces in xmobar
+                    , ppHiddenNoWindows = xmobarColor "#F07178" ""        -- Hidden workspaces (no windows)
+                    , ppSep =  "<fc=#666666> | </fc>"                     -- Separators in xmobar
+                    , ppUrgent = xmobarColor "#C45500" "" . wrap "!" "!"  -- Urgent workspace
+                    , ppExtras  = [windowCount]                           -- # of windows current workspace
+                    , ppOrder  = \(ws:_:t:ex) -> [ws]++ex++[t]
                     }
     , manageHook = myManageHook 
     , handleEventHook  = myEventHooks

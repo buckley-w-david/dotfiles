@@ -4,10 +4,6 @@
 
 set -e
 
-echo "STARTING BUILD"
 stack build :my-xmonad --verbosity warn
-echo "DONE BUILD"
-echo "STARTING INSTALL"
 stack install :my-xmonad --local-bin-path bin/ --verbosity warn
-echo "DONE INSTALL"
 mv bin/my-xmonad "$1"
