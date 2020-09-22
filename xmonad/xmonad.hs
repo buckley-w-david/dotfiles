@@ -17,7 +17,7 @@ import XMonad.Actions.DynamicWorkspaces (selectWorkspace, withWorkspace, removeW
 import XMonad.Hooks.DynamicLog          (dynamicLogWithPP, ppOutput, ppTitle, ppCurrent, ppVisible, ppHidden, ppHiddenNoWindows, ppSep, ppUrgent, ppExtras, ppOrder, xmobarPP, xmobarColor, shorten, wrap)
 import XMonad.Hooks.DynamicProperty     (dynamicPropertyChange)
 import XMonad.Hooks.EwmhDesktops        (ewmh, ewmhDesktopsEventHook, ewmhDesktopsStartup)
-import XMonad.Hooks.ManageHelpers       (isFullscreen, isDialog, doFullFloat, doCenterFloat, transience')
+import XMonad.Hooks.ManageHelpers       (isDialog, doCenterFloat, transience')
 import XMonad.Hooks.ManageDocks         (avoidStruts, docks, ToggleStruts(..))
 
     -- Layout
@@ -105,7 +105,7 @@ myStartupHook = do
 -- with my CUSTOM_TYPE xprop gets moved to it's correct workspace. This is a measure to help prevent
 -- have to list all that various and sundry applications I'd like to move in my xmonad config file
 -- makeDynamicPropertyChange
-myWorkspaceNames = ["main", "comms", "media", "dev1", "dev2", "dev3" ,"games", "wiki", "launchers"] 
+myWorkspaceNames = ["main", "comms", "media", "dev1", "dev2", "dev3" ,"games", "notes", "other"] 
 myWorkspaces = map ( \(x, y) -> show (x::Int) ++ ":" ++ y) (zip [1..] myWorkspaceNames)
 -- myWorkspaceHooks = map makeDynamicPropertyChange myWorkspaces
 
@@ -122,10 +122,8 @@ myLayoutHook = avoidStruts $ full ||| tall -- ||| grid ||| tab
 ------------------------------------------------------------------------
 -- MANAGEHOOK
 ------------------------------------------------------------------------
-myManageHook = manageSpawn <+> composeAll [ isFullscreen   --> doFullFloat
-                                     , isDialog                       --> doCenterFloat
-                                     , className =? "Gimp"            --> doFloat
-                                     , className =? "zoom"            --> doFloat
+myManageHook = manageSpawn <+> composeAll [ isDialog                       --> doCenterFloat
+                                     -- , isFullscreen   --> doFullFloat
                                      , role      =? "pop-up"          --> doFloat
                                      , className =? "Steam"           --> doShift "7:games"
                                      , className =? "Lutris"          --> doShift "7:games"
