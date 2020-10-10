@@ -13,10 +13,10 @@ set encoding=utf-8
 :let mapleader = ","
 
 " Tired of your wrong shit
-noremap <Left> :echoe "Use h"<CR>
-nnoremap <Right> :echoe "Use l"<CR>
-nnoremap <Up> :echoe "Use k"<CR>
-nnoremap <Down> :echoe "Use j"<CR>
+" noremap <Left> :echoe "Use h"<CR>
+" nnoremap <Right> :echoe "Use l"<CR>
+" nnoremap <Up> :echoe "Use k"<CR>
+" nnoremap <Down> :echoe "Use j"<CR>
 
 " Reload files if changed outside vim
 set autoread
@@ -58,6 +58,14 @@ nnoremap k gk
 " highlight last inserted text
 nnoremap gV `[v`]
 
+" Moving Lines - From VimTricks 2020-10-08
+nnoremap <c-j> :m .+1<CR>==
+nnoremap <c-k> :m .-2<CR>==
+inoremap <c-j> <Esc>:m .+1<CR>==gi
+inoremap <c-k> <Esc>:m .-2<CR>==gi
+vnoremap <c-j> :m '>+1<CR>gv=gv
+vnoremap <c-k> :m '<-2<CR>gv=gv
+
 set showcmd             " show the command
 
 " Before writing the buffer in .py files
@@ -79,38 +87,52 @@ color slate-with-skyblue-comments
 set rtp+=~/.vim/bundle/Vundle.vim
 call vundle#begin()
 Plugin 'VundleVim/Vundle.vim'
+" Status Bar
 Plugin 'vim-airline/vim-airline'
 Plugin 'editorconfig/editorconfig'
+" comment out stuff (gcc, gc)
 Plugin 'tpope/vim-commentary'
+" :Git
 Plugin 'tpope/vim-fugitive'
 Plugin 'tpope/vim-git'
+" Adds a new object based on indentation
 Plugin 'michaeljsmith/vim-indent-object'
-Plugin 'kana/vim-textobj-user'
+" Create your own text objects
+" Plugin 'kana/vim-textobj-user'
 Plugin 'tpope/vim-surround'
+" Allow plugin stuff to repeat
 Plugin 'tpope/vim-repeat'
+" Align text (Needed for vim-markdown)
+Plugin 'godlygeek/tabular'
+" Syntax highlighting, matching rules and mappings for Markdown
 Plugin 'plasticboy/vim-markdown'
+" Distinct highlighting of keywords vs values, JSON-specific (non-JS)
+" warnings, quote concealing.
 Plugin 'elzr/vim-json'
-Plugin 'w0rp/ale'
-Plugin 'elixir-editors/vim-elixir'
+" Asynchronous Lint Engine
+" Plugin 'w0rp/ale'
+" Plugin 'elixir-editors/vim-elixir'
 Plugin 'chrisbra/csv.vim'
-Plugin 'plytophogy/vim-virtualenv'
-Plugin 'terryma/vim-multiple-cursors'
+" Plugin 'plytophogy/vim-virtualenv'
+" Plugin 'mg979/vim-visual-multi'
+" Sensible defaults - I'm a noob
 Plugin 'tpope/vim-sensible'
+" Dispatch ... for async running of stuff
 Plugin 'tpope/vim-dispatch'
 " Plugin 'ambv/black'
 Plugin 'fatih/vim-go'
-Plugin 'prettier/vim-prettier'
-Plugin 'vim-scripts/st.vim'
-Plugin 'francoiscabrol/ranger.vim'
-Plugin 'xuhdev/vim-latex-live-preview'
-Plugin 'dart-lang/dart-vim-plugin'
-Plugin 'thosakwe/vim-flutter'
+" Plugin 'prettier/vim-prettier'
+" Plugin 'vim-scripts/st.vim'
+" Plugin 'francoiscabrol/ranger.vim'
+" Plugin 'xuhdev/vim-latex-live-preview'
+" Plugin 'dart-lang/dart-vim-plugin'
+" Plugin 'thosakwe/vim-flutter'
 Plugin 'neovimhaskell/haskell-vim.git'
 call vundle#end()
 
 " Ale
-nmap <silent> <C-k> <Plug>(ale_previous_wrap)
-nmap <silent> <C-j> <Plug>(ale_next_wrap)
+" nmap <silent> <C-k> <Plug>(ale_previous_wrap)
+" nmap <silent> <C-j> <Plug>(ale_next_wrap)
 
 " vim-markdown
 let g:vim_markdown_folding_disabled = 1
@@ -119,8 +141,8 @@ let g:vim_markdown_folding_disabled = 1
 let g:EditorConfig_exclude_patterns = ['fugitive://.*']
 
 " vim-prettier
-let g:prettier#config#single_quote = 'true'
-let g:prettier#config#semi = 'false'
+" let g:prettier#config#single_quote = 'true'
+" let g:prettier#config#semi = 'false'
 
 " Flutter
 " call FlutterMenu()

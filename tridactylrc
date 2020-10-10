@@ -16,6 +16,8 @@ set hintnames numeric
 " Defaults to 300ms but I'm a 'move fast and close the wrong tabs' kinda chap
 set hintdelay 100
 
+set auconcreatecontainer true
+
 "
 " set editorcmd to suckless terminal, or use the defaults on other platforms
 " js tri.browserBg.runtime.getPlatformInfo().then(os=>{const editorcmd = os.os=="linux" ? "st vim" : "auto"; tri.config.set("editorcmd", editorcmd)})
@@ -116,8 +118,7 @@ bind ;C composite hint_focus; !s xdotool key Menu
 "
 " Autocontainers
 "
-
-" autocontain youtube.com youtube
+autocontain -s youtube\.com youtube
 
 "
 " Logging

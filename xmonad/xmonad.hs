@@ -78,7 +78,7 @@ myModMask :: KeyMask
 myModMask = mod4Mask       -- Sets modkey to super/windows ke
 
 myTerminal :: String
-myTerminal = "/usr/bin/termite"
+myTerminal = "/usr/bin/kitty"
 
 myFocusFollowsMouse :: Bool
 myFocusFollowsMouse = False
@@ -166,7 +166,7 @@ myXPConfig = def
 ------------------------------------------------------------------------
 myScratchPads = [
                       NS "spotify" "spotify" (className =? "Spotify") defaultFloating
-                    , NS "termite" "termite --name scratchpad" (appName =? "scratchpad") defaultFloating
+                    , NS "kitty" "kitty --name scratchpad" (appName =? "scratchpad") defaultFloating
                     ]
 
 
@@ -225,10 +225,10 @@ myKeys = [ ("M-b"          , sendMessage ToggleStruts              ) -- toggle t
          , ("<Print>"        , spawn "maim -s | xclip -selection clipboard -t image/png"                            ) -- Screenshot
          , ("M-<Print>"      , spawn "maim -i $((16#$(xwininfo | grep \"Window id\" | awk '{print $4}' | cut -c3-))) ~/Pictures/Screenshots/$(date +%s).png" ) -- Screenshot
          , ("M-S-s"          , namedScratchpadAction myScratchPads "spotify"  ) -- Spawn a scratchpad with spotify
-         , ("M-<F12>"        , namedScratchpadAction myScratchPads "termite"  ) -- Spawn a scratchpad with termite
+         , ("M-<F12>"        , namedScratchpadAction myScratchPads "kitty"  ) -- Spawn a scratchpad with kitty
          , ("M-w"            , spawn "firefox"                              ) -- launch browser
          , ("M-e"            , spawn "rox"                                  ) -- launch file manager
-         -- , ("M-e"            , spawn "termite -e 'vifm'"                    ) -- launch file manager
+         -- , ("M-e"            , spawn "kitty -e 'vifm'"                    ) -- launch file manager
 
          -- Exiting
          , ("M-r"            , spawn "xmonad --recompile && xmonad --restart" ) -- restart xmonad
