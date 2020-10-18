@@ -22,6 +22,9 @@
     ~/.xmonad/xmonad.hs: 
         create: true
         path: xmonad/xmonad.hs
+    ~/.xmonad/startup-hook: 
+        create: true
+        path: xmonad/startup-hook
     ~/.xmonad/build: 
         create: true
         path: xmonad/build

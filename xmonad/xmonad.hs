@@ -36,7 +36,6 @@ import XMonad.Util.EZConfig             (additionalKeysP)
 import XMonad.Util.Run                  (spawnPipe)
 import XMonad.Util.Scratchpad           (scratchpadManageHookDefault)
 import XMonad.Util.NamedScratchpad      (namedScratchpadAction, defaultFloating, NamedScratchpad(..))
-import XMonad.Util.SpawnOnce
 
     -- Custom
 import qualified Utils
@@ -92,10 +91,7 @@ windowCount = gets $ Just . show . length . integrate' . stack . workspace . cur
 myStartupHook :: X ()
 myStartupHook = do
     ewmhDesktopsStartup
-    spawnOnce "nm-applet --sm-disable &"
-    spawnOnce "trayer --edge top --align right --SetDockType true --SetPartialStrut true --expand true --width 10 --transparent true --tint 0x191970 --height 17 &"
-    spawnOnce "xss-lock --xscreensaver-command -lock &"
-    spawnOnce "xscreensaver -no-splash &"
+    spawn "~/.xmonad/startup-hook"
 
 
 ------------------------------------------------------------------------

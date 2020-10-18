@@ -14,3 +14,4 @@ alias get='git '
 
 ## Generic Aliases
 alias xmonad-config="vim ~/.xmonad/xmonad.hs; xmonad --recompile; xmonad --restart"
+alias ssh="kitty +kitten ssh"

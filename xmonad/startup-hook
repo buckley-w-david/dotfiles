@@ -1,0 +1,41 @@
+#!/bin/bash
+# 
+# xmonad "startup hook" script. This gets run after xmonad is initialized,
+# via the startupHook facility provided by xmonad. It's useful for 
+# running any programs which you want to use within xmonad but
+# which don't need to be initialized before xmonad is running. 
+#
+# Original Author: David Brewer
+# Repository: https://github.com/davidbrewer/xmonad-ubuntu-conf
+
+#
+# TRAY ICON SOFTWARE
+#
+
+if [ -z "$(pgrep trayer)" ] ; then
+    trayer --edge top --align right --SetDockType true --SetPartialStrut true --expand true --width 10 --transparent true --tint 0x191970 --height 17 &
+fi
+
+# Network manager, so we don't have to configure wifi at the command line.
+if [ -z "$(pgrep nm-applet)" ] ; then
+    nm-applet --sm-disable &
+fi
+
+if [ -z "$(pgrep xscreensaver)" ] ; then
+    xscreensaver -no-splash &
+    xss-lock --xscreensaver-command -lock &
+fi
+
+if [ -z "$(pgrep udiskie)" ] ; then
+    udiskie --tray &
+fi
+
+# On login, we unlock the ssh keychain so we're not prompted for 
+# passphrases later. We pipe /dev/null to ssh-add to make it realize 
+# it's not running in a terminal. Otherwise, it won't launch the prompt.
+# 
+# If you don't use the ssh keychain you may not want this. Commented
+# by default as it is assumed many users will not want this feature.
+
+export SSH_ASKPASS="/usr/bin/qt4-ssh-askpass"
+cat /dev/null | ssh-add &
