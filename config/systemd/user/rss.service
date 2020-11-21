@@ -2,8 +2,8 @@
 Description=A script to check rss feeds
 Documentation=https://github.com/buckley-w-david/dotfiles
 Wants=network-online.target 
-Requires=scrolld.service
-After=network-online.target scrolld.service
+After=network-online.target
 
 [Service]
-ExecStart=/home/david/scripts/rss-update.sh
+WorkingDirectory=/home/david/scripts/update-rss-envs
+ExecStart=/home/david/scripts/update-rss-envs/update-rss-envs

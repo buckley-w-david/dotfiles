@@ -1,0 +1,8 @@
+[Unit]
+Description=A script to update web serials
+Wants=network-online.target 
+After=network-online.target
+
+[Service]
+WorkingDirectory=/home/david/Projects/auto-fff
+ExecStart=/home/david/Projects/auto-fff/auto_fff.py

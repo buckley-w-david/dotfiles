@@ -54,9 +54,9 @@ bind ;n js tri.excmds.open("javascript:(function(){var s=document.createElement(
 bindurl reddit.com gu urlparent 3
 
 " Google hinting
-bindurl www.google.c(om|a) f hint -Jc .rc > .r > a
-bindurl www.google.c(om|a) F hint -Jtc .rc > .r > a
-bindurl www.google.c(om|a) gF hint -Jqbc .rc > .r > a
+bindurl www.google.c(om|a) f hint -Jc .rc > div > a,table .r > a,#top_nav a
+bindurl www.google.c(om|a) F hint -Jtc .rc > div > a,table .r > a,#top_nav a
+bindurl www.google.c(om|a) gF hint -Jqbc .rc > div > a,table .r > a,#top_nav a
 
 " DuckDuckGo hinting
 bindurl duckduckgo.com f hint -Jc .result__a,.result__url__domain

@@ -48,6 +48,7 @@ import qualified Utils
 --   - https://github.com/altercation/dotfiles-tilingwm/blob/master/.xmonad/xmonad.hs
 --   - https://github.com/quarkQuark/dotfiles/blob/master/.config/xmonad/src/xmonad.hs
 --   - https://github.com/hallettj/dot-xmonad/blob/master/home/.xmonad/xmonad.hs
+--   - https://github.com/thearthur/.xmonad/blob/master/xmonad.hs
 --
 -- Check out Dynamic Projects: https://hackage.haskell.org/package/xmonad-contrib-0.13/docs/XMonad-Actions-DynamicProjects.html
 
@@ -101,7 +102,7 @@ myStartupHook = do
 -- with my CUSTOM_TYPE xprop gets moved to it's correct workspace. This is a measure to help prevent
 -- have to list all that various and sundry applications I'd like to move in my xmonad config file
 -- makeDynamicPropertyChange
-myWorkspaceNames = ["main", "comms", "media", "dev1", "dev2", "dev3" ,"games", "notes", "other"] 
+myWorkspaceNames = ["main", "main", "comms", "media", "dev1", "dev2", "dev3" ,"games", "notes"] 
 myWorkspaces = map ( \(x, y) -> show (x::Int) ++ ":" ++ y) (zip [1..] myWorkspaceNames)
 -- myWorkspaceHooks = map makeDynamicPropertyChange myWorkspaces
 
@@ -121,11 +122,11 @@ myLayoutHook = avoidStruts $ full ||| tall -- ||| grid ||| tab
 myManageHook = manageSpawn <+> composeAll [ isDialog                       --> doCenterFloat
                                      -- , isFullscreen   --> doFullFloat
                                      , role      =? "pop-up"          --> doFloat
-                                     , className =? "Steam"           --> doShift "7:games"
-                                     , className =? "Lutris"          --> doShift "7:games"
-                                     , className =? "discord"         --> doShift "2:comms"
-                                     , className =? "Ripcord"         --> doShift "2:comms"
-                                     , className =? "Thunderbird"     --> doShift "2:comms"
+                                     , className =? "Steam"           --> doShift "8:games"
+                                     , className =? "Lutris"          --> doShift "8:games"
+                                     , className =? "discord"         --> doShift "3:comms"
+                                     , className =? "Ripcord"         --> doShift "3:comms"
+                                     , className =? "Thunderbird"     --> doShift "3:comms"
                                      , transience'
                                      , scratchpadManageHookDefault
                                      ]
