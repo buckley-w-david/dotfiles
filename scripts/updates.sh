@@ -1,3 +1,5 @@
+#!/usr/bin/bash
+
 updates=$(checkupdates)
 if [[ -n "$updates" ]]; then
     if [[ "$updates" = "0" ]]; then

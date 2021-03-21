@@ -1,10 +1,10 @@
 #!/usr/bin/bash
 
-systemctl --user is-active --quiet mpv
-if [ $? != "0" ]; then
-    systemctl --user start mpv
-    sleep 5 # Wish I didn't have to do this
-fi
+# systemctl --user is-active --quiet mpv
+# if [ $? != "0" ]; then
+#     systemctl --user start mpv
+#     sleep 5 # Wish I didn't have to do this
+# fi
 
 for vid in $@
 do

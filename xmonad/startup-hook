@@ -21,13 +21,21 @@ if [ -z "$(pgrep nm-applet)" ] ; then
     nm-applet --sm-disable &
 fi
 
-if [ -z "$(pgrep xscreensaver)" ] ; then
-    xscreensaver -no-splash &
-    xss-lock --xscreensaver-command -lock &
-fi
+# if [ -z "$(pgrep xscreensaver)" ] ; then
+#     xscreensaver -no-splash &
+#     xss-lock --xscreensaver-command -lock &
+# fi
 
 if [ -z "$(pgrep udiskie)" ] ; then
     udiskie --tray &
+fi
+
+if [ -z "$(pgrep caffeine)" ] ; then
+    caffeine-indicator &
+fi
+
+if [ -z "$(pgrep blueman-applet)" ] ; then
+    blueman-applet &
 fi
 
 # On login, we unlock the ssh keychain so we're not prompted for 
@@ -38,4 +46,6 @@ fi
 # by default as it is assumed many users will not want this feature.
 
 export SSH_ASKPASS="/usr/bin/qt4-ssh-askpass"
-cat /dev/null | ssh-add &
+if [ "$(ssh-add -L)" = "The agent has no identities." ] ; then
+    cat /dev/null | ssh-add &
+fi

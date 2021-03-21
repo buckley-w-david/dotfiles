@@ -1,22 +1,26 @@
 #!/bin/bash
 
-DEFAULT_SINK=$(pacmd list-sinks | grep '*' | awk '{print $3}')
+DEFAULT_SINK=$(pactl list sinks | head -n 1 | awk '{print $2}' | sed -e "s/^\#//")
 SINK=${3:-$DEFAULT_SINK}
 
 function current {
     pactl list sinks | \
-        perl -000ne "if(/#$SINK/){/(Volume:.*)/; print \"\$1\n\"}" | \
+        perl -000ne "if(/#$SINK/ && /State: RUNNING/){/(Volume:.*)/; print \"\$1\n\"}" | \
         sed -e 's,.* \([0-9][0-9]*\)%.*,\1,'
 }
 
 op="$1"
 case $op in
     "up")
-    pactl set-sink-mute $SINK false; pactl set-sink-volume $SINK +5%
+    if [ "`current`" -lt "100" ]; then
+        pactl set-sink-mute $SINK false; pactl set-sink-volume $SINK +5%
+    fi
     current
     ;;
     "down")
-    pactl set-sink-mute $SINK false; pactl set-sink-volume $SINK -5%
+    if [ "`current`" -gt "0" ]; then
+        pactl set-sink-mute $SINK false; pactl set-sink-volume $SINK -5%
+    fi
     current
     ;;
     "toggle")

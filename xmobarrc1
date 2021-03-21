@@ -6,8 +6,8 @@ Config { font = "-*-Fixed-Bold-R-Normal-*-12-*-*-*-*-*-*-*"
        , commands = [ Run Cpu ["-L","3","-H","50","--normal","green","--high","red"] 10
                     , Run Date "%a %b %_d %l:%M" "date" 10
                     , Run StdinReader
-                    , Run Com "/home/david/scripts/updates.sh" [] "pacman" 100
                     , Run Com "/home/david/scripts/screensaver.sh" [] "screensaver" 10
+                    , Run Com "/usr/bin/cat" ["/home/david/.local/share/infod/mnt/pacman"] "pacman" 10
                     , Run Volume "default" "Master" ["-t", "<volume>% <status>"] 10 
                     ]
        , sepChar = "%"

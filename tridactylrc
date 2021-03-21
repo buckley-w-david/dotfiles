@@ -54,9 +54,10 @@ bind ;n js tri.excmds.open("javascript:(function(){var s=document.createElement(
 bindurl reddit.com gu urlparent 3
 
 " Google hinting
-bindurl www.google.c(om|a) f hint -Jc .rc > div > a,table .r > a,#top_nav a
-bindurl www.google.c(om|a) F hint -Jtc .rc > div > a,table .r > a,#top_nav a
-bindurl www.google.c(om|a) gF hint -Jqbc .rc > div > a,table .r > a,#top_nav a
+"#rso > div > .g > div > div > a
+bindurl www.google.c(om|a) f hint -Jc #rso > div > .g > div > div > a,#top_nav a
+bindurl www.google.c(om|a) F hint -Jtc #rso > div > .g > div > div > a,#top_nav a
+bindurl www.google.c(om|a) gF hint -Jqbc #rso > div > .g > div > div > a,#top_nav a
 
 " DuckDuckGo hinting
 bindurl duckduckgo.com f hint -Jc .result__a,.result__url__domain
@@ -118,7 +119,7 @@ bind ;C composite hint_focus; !s xdotool key Menu
 "
 " Autocontainers
 "
-autocontain -s youtube\.com youtube
+" autocontain -s youtube\.com youtube
 
 "
 " Logging

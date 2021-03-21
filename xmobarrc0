@@ -6,19 +6,19 @@ Config { font = "-*-Fixed-Bold-R-Normal-*-12-*-*-*-*-*-*-*"
        , commands = [ Run Cpu ["-L","3","-H","50","--normal","green","--high","red"] 10
                     , Run Date "%a %b %_d %l:%M" "date" 10
                     , Run StdinReader
-                    , Run Com "/home/david/scripts/rss-count.sh" [] "rss" 10
-                    , Run Com "/home/david/scripts/updates.sh" [] "pacman" 100
                     , Run Com "/home/david/scripts/screensaver.sh" [] "screensaver" 10
+                    , Run Com "/usr/bin/cat" ["/home/david/.local/share/infod/mnt/rss"] "rss" 10
+                    , Run Com "/usr/bin/cat" ["/home/david/.local/share/infod/mnt/pacman"] "pacman" 10
                     , Run Volume "default" "Master" ["-t", "<volume>% <status>"] 10
                     ]
        , sepChar = "%"
        , alignSep = "}{"
        , template = "%StdinReader% \
-                    \| <action=`termite -e newsboat` button=1>Articles: %rss%</action> \
+                    \| <action=`kitty newsboat` button=1>Articles: %rss%</action> \
                     \| Updates: %pacman% \
                     \}{\
                     \ <action=`sed -i 's/mode:\s*off/\x0/g; s/mode:\s*one/mode:\t\toff/g; s/\x0/mode:\t\tone/g' ~/.xscreensaver` button=1>Screensaver: %screensaver%</action> \
-                    \| <action=`termite -e 'htop -s PERCENT_CPU'` button=1>%cpu%</action> \
+                    \| <action=`kitty htop -s PERCENT_CPU` button=1>%cpu%</action> \
                     \| <action=`/home/david/scripts/vol-ctl down` button=1>-</action>\
                     \ <action=`/home/david/scripts/vol-ctl toggle` button=1>%default:Master%</action>\
                     \<action=`/home/david/scripts/vol-ctl up` button=1>+</action> \

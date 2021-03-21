@@ -66,6 +66,9 @@ inoremap <c-k> <Esc>:m .-2<CR>==gi
 vnoremap <c-j> :m '>+1<CR>gv=gv
 vnoremap <c-k> :m '<-2<CR>gv=gv
 
+" Paste on new line
+nnoremap ,p :pu<CR>
+
 set showcmd             " show the command
 
 " Before writing the buffer in .py files

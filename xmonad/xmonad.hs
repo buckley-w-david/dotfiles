@@ -9,15 +9,16 @@ import System.Exit                      (exitSuccess)
     -- Actions
 import XMonad.Actions.CopyWindow        (copyToAll, killAllOtherCopies, kill1)
 import XMonad.Actions.CycleWindows      (cycleRecentWindows)
-import XMonad.Actions.CycleWS           (nextWS, prevWS, shiftToNext, shiftToPrev, nextScreen, prevScreen)
+import XMonad.Actions.CycleWS           (nextWS, prevWS, shiftToNext, shiftToPrev, prevScreen)
 import XMonad.Actions.SpawnOn           (manageSpawn)
 import XMonad.Actions.DynamicWorkspaces (selectWorkspace, withWorkspace, removeWorkspace, renameWorkspace)
+import XMonad.Actions.Warp              (banishScreen, Corner(LowerLeft))
 
     -- Hooks
 import XMonad.Hooks.DynamicLog          (dynamicLogWithPP, ppOutput, ppTitle, ppCurrent, ppVisible, ppHidden, ppHiddenNoWindows, ppSep, ppUrgent, ppExtras, ppOrder, xmobarPP, xmobarColor, shorten, wrap)
 import XMonad.Hooks.DynamicProperty     (dynamicPropertyChange)
 import XMonad.Hooks.EwmhDesktops        (ewmh, ewmhDesktopsEventHook, ewmhDesktopsStartup)
-import XMonad.Hooks.ManageHelpers       (isDialog, doCenterFloat, transience')
+import XMonad.Hooks.ManageHelpers       (isDialog, doCenterFloat, transience', doFullFloat)
 import XMonad.Hooks.ManageDocks         (avoidStruts, docks, ToggleStruts(..))
 
     -- Layout
@@ -121,12 +122,18 @@ myLayoutHook = avoidStruts $ full ||| tall -- ||| grid ||| tab
 ------------------------------------------------------------------------
 myManageHook = manageSpawn <+> composeAll [ isDialog                       --> doCenterFloat
                                      -- , isFullscreen   --> doFullFloat
-                                     , role      =? "pop-up"          --> doFloat
-                                     , className =? "Steam"           --> doShift "8:games"
-                                     , className =? "Lutris"          --> doShift "8:games"
-                                     , className =? "discord"         --> doShift "3:comms"
-                                     , className =? "Ripcord"         --> doShift "3:comms"
-                                     , className =? "Thunderbird"     --> doShift "3:comms"
+                                     , role      =? "pop-up"             --> doFloat
+                                     , title     =? "Hearthstone"        --> doFullFloat 
+                                     , title     =? "HearthstoneOverlay" --> doFloat 
+                                     , className =? "obsidian"           --> doShift "9:notes"
+                                     , className =? "Steam"              --> doShift "8:games"
+                                     , className =? "Gamehub"            --> doShift "8:games"
+                                     , className =? "Lutris"             --> doShift "8:games"
+                                     , className =? "discord"            --> doShift "3:comms"
+                                     , className =? "Element"            --> doShift "3:comms"
+                                     , className =? "Ripcord"            --> doShift "3:comms"
+                                     , className =? "Thunderbird"        --> doShift "3:comms"
+                                     , className =? "mpvIdle"            --> doShift "4:media"
                                      , transience'
                                      , scratchpadManageHookDefault
                                      ]
@@ -138,9 +145,10 @@ myManageHook = manageSpawn <+> composeAll [ isDialog                       --> d
 -- EVENTHOOK
 ------------------------------------------------------------------------
 spotifyEventHook = dynamicPropertyChange "WM_NAME" (className =? "Spotify" --> defaultFloating) -- Spotify doesn't set their props before it maps itself, we have to wait for the change dynamically
+--elementEventHook = dynamicPropertyChange "WM_CLASS" (className =? "Element" --> defaultFloating) -- Having trouble getting Element to shift on start
 gameEventHook = dynamicPropertyChange "CUSTOM_TYPE" (stringProperty "CUSTOM_TYPE" =? "Game" --> doShift "7:games") -- I'd like to not have to explicitly list game stuff, and instead give them a custom xprop that we look for
 
-myEventHooks = handleEventHook def <+> spotifyEventHook <+> gameEventHook <+> ewmhDesktopsEventHook
+myEventHooks = handleEventHook def <+> spotifyEventHook <+> gameEventHook <+> ewmhDesktopsEventHook 
 
 
 ------------------------------------------------------------------------
@@ -179,9 +187,9 @@ myKeys = [ ("M-b"          , sendMessage ToggleStruts              ) -- toggle t
          , ("M-<Left>"       , prevWS                                       ) -- go to prev workspace
          , ("M-S-<Right>"    , shiftToNext                                  ) -- move client to next workspace
          , ("M-S-<Left>"     , shiftToPrev                                  ) -- move client to prev workspace
-         , ("M-."            , nextScreen                                   ) -- Switch focus to next monitor
          , ("M-,"            , prevScreen                                   ) -- Switch focus to prev monitor
 
+         , ("M-'", banishScreen LowerLeft                                   ) -- banish mouse
 
          -- Dynamic Workspace Bindings
          , ("M-v"            , selectWorkspace myXPConfig                   ) -- Create a new dynamic workspace
@@ -199,10 +207,13 @@ myKeys = [ ("M-b"          , sendMessage ToggleStruts              ) -- toggle t
          -- dmenu Shenanigans
          , ("M-p"            , spawn "dmenu_run_history"                    ) -- app launcher
          , ("M-c"            , spawn "dmenu_python"                         ) -- Run one-off Python commands
+         , ("M-o"            , spawn "/home/david/scripts/open"             ) -- Open links based on my app opener (domain based)
+         , ("M-."            , spawn "/home/david/scripts/emoji"            ) -- Poor mans emoji keyboard
 
          -- Password Manager
-         , ("M-C-p"          , spawn "passmenu"                            ) -- Display password prompt
-         , ("M-S-p"          , spawn "passmenu --type"                     ) -- Display password prompt
+         , ("M-S-p"          , spawn "pmenu --type"                        ) -- Display password prompt with domain check
+         , ("M-C-p"          , spawn "passmenu --type"                     ) -- Display password prompt
+         , ("M-M1-p"         , spawn "passmenu"                            ) -- Display password prompt
 
          -- System Controls
          , ("M-C-d"          , spawn disableXscreensaver                    ) -- disable xscreensaver
@@ -212,19 +223,26 @@ myKeys = [ ("M-b"          , sendMessage ToggleStruts              ) -- toggle t
          , ("<XF86AudioMute>"         , spawn "/home/david/scripts/vol-ctl toggle")
          , ("<XF86AudioRaiseVolume>"  , spawn "/home/david/scripts/vol-ctl up")
          , ("<XF86AudioLowerVolume>"  , spawn "/home/david/scripts/vol-ctl down")
-         -- TODO These should probably be more general
-         , ("<XF86AudioNext>"         , spawn "dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotifyd /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.Next")
-         , ("<XF86AudioPrev>"         , spawn "dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotifyd /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.Previous")
-         , ("<XF86AudioStop>"         , spawn "dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotifyd /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.Stop")
-         , ("<XF86AudioPlay>"         , spawn "dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotifyd /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.PlayPause") 
+         -- TODO These should probably be more general, be able to handle stuff other than spotify. Not sure how I'll know what to send commands to...
+         -- , ("<XF86AudioNext>"         , spawn "/home/david/scripts/spotify/next")
+         -- , ("<XF86AudioPrev>"         , spawn "/home/david/scripts/spotify/previous")
+         -- , ("<XF86AudioStop>"         , spawn "/home/david/scripts/spotify/stop")
+         -- , ("<XF86AudioPlay>"         , spawn "/home/david/scripts/spotify/play-pause") 
+         --
+         -- This is me attempting to be more general with media commands
+         , ("<XF86AudioNext>"         , spawn "playerctl next")
+         , ("<XF86AudioPrev>"         , spawn "playerctl previous")
+         , ("<XF86AudioStop>"         , spawn "playerctl stop")
+         , ("<XF86AudioPlay>"         , spawn "playerctl play-pause") 
 
          -- Applications
          , ("<Print>"        , spawn "maim -s | xclip -selection clipboard -t image/png"                            ) -- Screenshot
          , ("M-<Print>"      , spawn "maim -i $((16#$(xwininfo | grep \"Window id\" | awk '{print $4}' | cut -c3-))) ~/Pictures/Screenshots/$(date +%s).png" ) -- Screenshot
          , ("M-S-s"          , namedScratchpadAction myScratchPads "spotify"  ) -- Spawn a scratchpad with spotify
          , ("M-<F12>"        , namedScratchpadAction myScratchPads "kitty"  ) -- Spawn a scratchpad with kitty
-         , ("M-w"            , spawn "firefox"                              ) -- launch browser
+         , ("M-w"            , spawn "firefox-developer-edition"                              ) -- launch browser
          , ("M-e"            , spawn "rox"                                  ) -- launch file manager
+         , ("M-z"            , spawn "/home/david/scripts/obsidian.sh"      ) -- note-taking app
          -- , ("M-e"            , spawn "kitty -e 'vifm'"                    ) -- launch file manager
 
          -- Exiting

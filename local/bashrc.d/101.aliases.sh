@@ -15,3 +15,8 @@ alias get='git '
 ## Generic Aliases
 alias xmonad-config="vim ~/.xmonad/xmonad.hs; xmonad --recompile; xmonad --restart"
 alias ssh="kitty +kitten ssh"
+
+alias fuckyou="chafa /home/david/Downloads/middle-finger.jpg"
+
+alias venv="python -m venv .venv && . .venv/bin/activate"
+alias screenshot="maim -s | xclip -selection clipboard -t image/png"

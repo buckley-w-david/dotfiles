@@ -1,5 +1,5 @@
 [user]
-	email = buckley.w.david@gmail.com
+	email = david@davidbuckley.ca
 	name = David Buckley
 [alias]
 	logtree = log --graph --oneline --decorate --all
@@ -10,3 +10,5 @@
 	required = true
 [pull]
 	rebase = false
+[init]
+	defaultBranch = master

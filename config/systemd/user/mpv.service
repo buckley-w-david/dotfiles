@@ -4,9 +4,10 @@ Documentation=https://mpv.io/manual/
 After=multi-user.target
 
 [Service]
-ExecStart=/usr/bin/mpv --vo=gpu --input-ipc-server='/tmp/mpvsocket' --idle --quiet
+ExecStartPre=/bin/sleep 30
+ExecStart=/usr/bin/mpv --vo=gpu --input-ipc-server='/tmp/mpvsocket' --idle --quiet --x11-name=mpvIdle --keep-open
 Restart=always
 RestartSec=12
 
 [Install]
-WantedBy=custom.target
+WantedBy=default.target
