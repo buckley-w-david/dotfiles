@@ -38,6 +38,10 @@
       glob: true
       create: true
       path: config/termite/*
+    ~/.config/kitty: 
+      glob: true
+      create: true
+      path: config/kitty/*
     ~/.local/bashrc.d: 
       glob: true
       create: true
