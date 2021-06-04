@@ -13,7 +13,7 @@
 #
 
 if [ -z "$(pgrep trayer)" ] ; then
-    trayer --edge top --align right --SetDockType true --SetPartialStrut true --expand true --width 10 --transparent true --tint 0x191970 --height 17 &
+    trayer --edge top --align right --SetDockType true --SetPartialStrut true --expand true --width 10 --transparent true --alpha 0 --tint 0x191970 --height 35 &
 fi
 
 # Network manager, so we don't have to configure wifi at the command line.
@@ -37,6 +37,24 @@ fi
 if [ -z "$(pgrep blueman-applet)" ] ; then
     blueman-applet &
 fi
+
+# Is there a better place to put this?
+xrandr --dpi 276 --fb 7680x2160 --output DP-2 --mode 3840x2160 --output DP-0 --scale 2x2 --pos 3840x0 --panning 3840x2160+3840+0
+
+# create a new temporary '.Xresources' file with only the DPI setting
+TMPFILE=$(mktemp)
+echo "! Fonts {{{
+     Xft.dpi: 144
+! }}}" > "$TMPFILE"
+
+# merge the temporary .Xresources file on top of the already loaded config
+xrdb -merge "$TMPFILE"
+
+#cleanup
+rm -f "$TMPFILE"
+
+# Black background
+xloadimage -onroot -fullscreen /home/david/Pictures/black.png
 
 # On login, we unlock the ssh keychain so we're not prompted for 
 # passphrases later. We pipe /dev/null to ssh-add to make it realize 

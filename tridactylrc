@@ -36,6 +36,8 @@ bind k scrollline -3
 bind ;c hint -Jc [class*="expand"],[class="togg"]
 bind ;u hint -Jc [class*="arrow"]
 
+unbind <F1>
+
 " Custom mpvsafe
 bind ;V hint -qW js -p tri.excmds.shellescape(JS_ARG).then(url => tri.excmds.exclaim_quiet('~/scripts/mpv/append ' + url))
 
@@ -91,6 +93,12 @@ bindurl old\.reddit\.com\/r\/.*\/comments gF hint -Jqbc a
 "
 unbindurl youtube.com/watch f
 
+"
+" Twitch binding
+"
+bindurl twitch.tv/* gc urlmodify -g -1 chat
+bindurl twitch.tv/* gv composite get_current_url | js -p tri.excmds.shellescape(JS_ARG).then(url => tri.excmds.exclaim_quiet('~/scripts/mpv/append ' + url))
+
 " Allow Ctrl-a to select all in the commandline
 unbind --mode=ex <C-a>
 
@@ -137,6 +145,10 @@ autocmd DocStart ^http(s?)://www.reddit.com js tri.excmds.urlmodify("-t", "www",
 " autocmd DocStart ^http(s?)://www.amazon.com js tri.excmds.urlmodify("-t", "www", "smile")
 " Disable Polymer on Youtube - infinite loop :(
 " autocmd DocStart ^http(s?)://www.youtube.com js tri.excmds.urlmodify("-s", "disable_polymer", "true")
+autocmd DocStart ^http(s?)://hsreplay.net/decks/$ js tri.excmds.urlmodify("-t", "decks/", "decks/#rankRange=DIAMOND_THROUGH_LEGEND")
+autocmd DocStart ^http(s?)://hsreplay.net/meta/$ js tri.excmds.urlmodify("-t", "meta/", "meta/#rankRange=DIAMOND_THROUGH_LEGEND")
+
+autocmd DocStart ^http(s?)://www.twitch.tv/directory/following$ js tri.excmds.urlmodify("-t", "following", "following/live")
 
 " autocmd DocStart ^http(s?)://www.youtube.com/watch composite get_current_url | js -p tri.excmds.shellescape(JS_ARG).then(url => tri.excmds.exclaim_quiet('~/scripts/mpv-append ' + url))
 " 

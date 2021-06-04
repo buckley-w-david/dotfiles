@@ -10,7 +10,7 @@ sysresources=/etc/X11/xinit/.Xresources
 sysmodmap=/etc/X11/xinit/.Xmodmap
 
 # DEFAULT_SESSION=startkde
-DEFAULT_SESSION=/home/david/.local/bin/xmonad
+DEFAULT_SESSION=xfce4-session
 
 # merge in defaults and keymaps
 

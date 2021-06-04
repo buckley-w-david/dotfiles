@@ -1,7 +1,7 @@
-Config { font = "-*-Fixed-Bold-R-Normal-*-12-*-*-*-*-*-*-*"
+Config { font = "xft:Monospace:pixelsize=20"
        , bgColor = "black"
        , fgColor = "grey"
-       , position = TopW L 90
+       , position = Static { xpos = 0 , ypos = 0, width = 3456, height = 35 }
        , allDesktops = True
        , commands = [ Run Cpu ["-L","3","-H","50","--normal","green","--high","red"] 10
                     , Run Date "%a %b %_d %l:%M" "date" 10

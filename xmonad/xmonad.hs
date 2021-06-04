@@ -103,7 +103,7 @@ myStartupHook = do
 -- with my CUSTOM_TYPE xprop gets moved to it's correct workspace. This is a measure to help prevent
 -- have to list all that various and sundry applications I'd like to move in my xmonad config file
 -- makeDynamicPropertyChange
-myWorkspaceNames = ["main", "main", "comms", "media", "dev1", "dev2", "dev3" ,"games", "notes"] 
+myWorkspaceNames = ["main", "main", "comms", "media", "dev1", "dev2", "dev3" ,"games", "games2"] 
 myWorkspaces = map ( \(x, y) -> show (x::Int) ++ ":" ++ y) (zip [1..] myWorkspaceNames)
 -- myWorkspaceHooks = map makeDynamicPropertyChange myWorkspaces
 
@@ -125,7 +125,8 @@ myManageHook = manageSpawn <+> composeAll [ isDialog                       --> d
                                      , role      =? "pop-up"             --> doFloat
                                      , title     =? "Hearthstone"        --> doFullFloat 
                                      , title     =? "HearthstoneOverlay" --> doFloat 
-                                     , className =? "obsidian"           --> doShift "9:notes"
+                                     -- , className =? "obsidian"           --> doShift "9:notes"
+                                     , title     =? "Hearthstone"        --> doShift "9:games"
                                      , className =? "Steam"              --> doShift "8:games"
                                      , className =? "Gamehub"            --> doShift "8:games"
                                      , className =? "Lutris"             --> doShift "8:games"
@@ -170,8 +171,9 @@ myXPConfig = def
 -- SCRATCHPADS
 ------------------------------------------------------------------------
 myScratchPads = [
-                      NS "spotify" "spotify" (className =? "Spotify") defaultFloating
-                    , NS "kitty" "kitty --name scratchpad" (appName =? "scratchpad") defaultFloating
+                      NS "spotify" "spotify --force-device-scale-factor=2.0" (className =? "Spotify") defaultFloating
+                    , NS "terminal" (myTerminal ++ " --name scratchpad") (appName =? "scratchpad") defaultFloating
+                    --, NS "spotify" "firefox --no-remote -P Spotify --class spotify-scratchpad --kiosk https://open.spotify.com" (className =? "spotify-scratchpad") defaultFloating
                     ]
 
 
@@ -238,12 +240,12 @@ myKeys = [ ("M-b"          , sendMessage ToggleStruts              ) -- toggle t
          -- Applications
          , ("<Print>"        , spawn "maim -s | xclip -selection clipboard -t image/png"                            ) -- Screenshot
          , ("M-<Print>"      , spawn "maim -i $((16#$(xwininfo | grep \"Window id\" | awk '{print $4}' | cut -c3-))) ~/Pictures/Screenshots/$(date +%s).png" ) -- Screenshot
+         , ("M-C-<Print>"    , spawn "/home/david/scripts/pinta-ss" ) -- Screenshot
          , ("M-S-s"          , namedScratchpadAction myScratchPads "spotify"  ) -- Spawn a scratchpad with spotify
-         , ("M-<F12>"        , namedScratchpadAction myScratchPads "kitty"  ) -- Spawn a scratchpad with kitty
+         , ("M-<F12>"        , namedScratchpadAction myScratchPads "terminal"  ) -- Spawn a scratchpad with terminal
          , ("M-w"            , spawn "firefox-developer-edition"                              ) -- launch browser
          , ("M-e"            , spawn "rox"                                  ) -- launch file manager
          , ("M-z"            , spawn "/home/david/scripts/obsidian.sh"      ) -- note-taking app
-         -- , ("M-e"            , spawn "kitty -e 'vifm'"                    ) -- launch file manager
 
          -- Exiting
          , ("M-r"            , spawn "xmonad --recompile && xmonad --restart" ) -- restart xmonad

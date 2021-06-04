@@ -35,6 +35,7 @@ packages:
 # forks / in-progress versions pinned to a git hash. For example:
 #
 # extra-deps:
+# - xmobar-0.34@sha256:6022fc7678d668826eaa248acf8d8f3e1e3bb1a5f9469cbcbf341002ccb6e307,11617
 # - acme-missiles-0.3
 # - git: https://github.com/commercialhaskell/stack.git
 #   commit: e7b331f14bcffb8367cd58fbfc8b40ec7642100a

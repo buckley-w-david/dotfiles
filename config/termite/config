@@ -4,7 +4,8 @@
 #clickable_url = true
 #dynamic_title = true
 #font = JetBrainsMono 9
-font = MonoSpace 9
+# font = MonoSpace 9
+font = iosevka 11
 #fullscreen = true
 #geometry = 640x480
 #icon_name = terminal
@@ -56,22 +57,46 @@ scrollback_lines = 10000
 highlight = #2f2f2f
 
 # Colors from color0 to color254 can be set
-color0 = #3f3f3f
-color1 = #705050
-color2 = #60b48a
-color3 = #dfaf8f
-color4 = #506070
-color5 = #dc8cc3
-color6 = #8cd0d3
-color7 = #dcdccc
-color8 = #709080
-color9 = #dca3a3
-color10 = #c3bf9f
-color11 = #f0dfaf
-color12 = #94bff3
-color13 = #ec93d3
-color14 = #93e0e3
-color15 = #ffffff
+# color0 = #3f3f3f
+# color1 = #705050
+# color2 = #60b48a
+# color3 = #dfaf8f
+# color4 = #506070
+# color5 = #dc8cc3
+# color6 = #8cd0d3
+# color7 = #dcdccc
+# color8 = #709080
+# color9 = #dca3a3
+# color10 = #c3bf9f
+# color11 = #f0dfaf
+# color12 = #94bff3
+# color13 = #ec93d3
+# color14 = #93e0e3
+# color15 = #ffffff
+
+# This is copied from my kitty theme
+background = #202020
+foreground = #d0d0d0
+cursor = #d0d0d0
+selection_background = #303030
+color0 = #151515
+color8 = #505050
+color1 = #ac4142
+color9 = #ac4142
+color2 = #7e8d50
+color10 = #7e8d50
+color3 = #e5b566
+color11 = #e5b566
+# color4 = #6c99ba
+# color4 = #0d73cc
+color12 = #6c99ba
+color5 = #9e4e85
+color13 = #9e4e85
+color6 = #7dd5cf
+color14 = #7dd5cf
+color7 = #d0d0d0
+color15 = #f5f5f5
+selection_foreground = #202020
 
 [hints]
 #font = Monospace 12
