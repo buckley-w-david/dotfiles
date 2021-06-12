@@ -246,6 +246,7 @@ myKeys = [ ("M-b"          , sendMessage ToggleStruts              ) -- toggle t
          , ("M-w"            , spawn "firefox-developer-edition"                              ) -- launch browser
          , ("M-e"            , spawn "rox"                                  ) -- launch file manager
          , ("M-z"            , spawn "/home/david/scripts/obsidian.sh"      ) -- note-taking app
+         , ("M-M1-r"          , spawn "/home/david/scripts/toggle-ruler"    ) -- Weird transparent overlay thing
 
          -- Exiting
          , ("M-r"            , spawn "xmonad --recompile && xmonad --restart" ) -- restart xmonad
