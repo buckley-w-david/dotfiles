@@ -5,16 +5,15 @@ import "strings"
 import "path/filepath"
 import "os"
 
-func reverse(ss []string) {
-	last := len(ss) - 1
-	for i := 0; i < len(ss)/2; i++ {
-		ss[i], ss[last-i] = ss[last-i], ss[i]
-	}
+// https://stackoverflow.com/a/53737602/14470574
+func prependString(x []string, y string) []string {
+	x = append(x, "")
+	copy(x[1:], x)
+	x[0] = y
+	return x
 }
 
 func main() {
-	var parts []string
-
 	userHome, err := os.UserHomeDir()
 	if err != nil {
 		panic("Halp")
@@ -22,14 +21,15 @@ func main() {
 	userPath := strings.Replace(os.Args[1], userHome, "~", 1)
 
 	part := filepath.Base(userPath)
+	parts := make([]string, strings.Count(userPath, string(filepath.Separator)))
+
 	parts = append(parts, part)
 	userPath = filepath.Dir(userPath)
 	for !(userPath == "/" || userPath == "~") {
 		part := filepath.Base(userPath)
-		parts = append(parts, part[0:1])
+		parts = prependString(parts, part[0:1])
 		userPath = filepath.Dir(userPath)
 	}
-	parts = append(parts, filepath.Base(userPath))
-	reverse(parts)
+	parts = prependString(parts, filepath.Base(userPath))
 	fmt.Println(filepath.Join(parts...))
 }
