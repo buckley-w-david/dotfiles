@@ -6,7 +6,7 @@ source ~/.bashrc
 
 old_nullglob=$(shopt -p | grep 'nullglob$')
 shopt -s nullglob
-files=($HOME/.local/bash_profile.d/*.{sh,bash})
+files=($HOME/.config/bash_profile.d/*.{sh,bash})
 eval "$old_nullglob"
 unset -v old_nullglob
 

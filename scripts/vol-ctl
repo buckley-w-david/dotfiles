@@ -3,8 +3,10 @@
 NSINKS=$(pactl list sinks short | wc -l)
 if [ "$NSINKS" -gt "1" ]; then
     DEFAULT_SINK=$(pactl list sinks short | grep RUNNING | awk '{print $1}')
-else
-    DEFAULT_SINK=$(pactl list sinks short | awk '{print $1}')
+fi
+
+if [ -z "$DEFAULT_SINK" ]; then
+    DEFAULT_SINK=$(pactl list sinks short | head -n 1 | awk '{print $1}')
 fi
 
 SINK=${3:-$DEFAULT_SINK}

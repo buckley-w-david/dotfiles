@@ -54,7 +54,11 @@ xrdb -merge "$TMPFILE"
 rm -f "$TMPFILE"
 
 # Black background
-xloadimage -onroot -fullscreen /home/david/Pictures/black.png
+# xloadimage -onroot -fullscreen /home/david/Pictures/black.png
+xsetroot -solid black &
+# Alternative command?
+# hsetroot /home/david/Pictures/black.png &
+
 
 # On login, we unlock the ssh keychain so we're not prompted for 
 # passphrases later. We pipe /dev/null to ssh-add to make it realize 

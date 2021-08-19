@@ -25,7 +25,7 @@ func main() {
 
 	parts = append(parts, part)
 	userPath = filepath.Dir(userPath)
-	for !(userPath == "/" || userPath == "~") {
+	for !(userPath == "/" || userPath == "~" || userPath == ".") {
 		part := filepath.Base(userPath)
 		parts = prependString(parts, part[0:1])
 		userPath = filepath.Dir(userPath)

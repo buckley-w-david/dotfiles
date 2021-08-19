@@ -43,18 +43,18 @@
       glob: true
       create: true
       path: config/kitty/*
-    ~/.local/bashrc.d: 
+    ~/.config/bashrc.d: 
       glob: true
       create: true
-      path: local/bashrc.d/*.sh
-    ~/.local/bash_profile.d: 
+      path: config/bashrc.d/*.sh
+    ~/.config/bash_profile.d: 
       glob: true
       create: true
-      path: local/bash_profile.d/*.sh
-    ~/.local/profile.d: 
+      path: config/bash_profile.d/*.sh
+    ~/.config/profile.d: 
       glob: true
       create: true
-      path: local/profile.d/*.sh
+      path: config/profile.d/*.sh
     ~/.mutt:
       glob: true
       create: true

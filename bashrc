@@ -4,7 +4,7 @@ export TRACE="/home/david/.bashrc:$TRACE"
 
 old_nullglob=$(shopt -p | grep 'nullglob$')
 shopt -s nullglob
-files=($HOME/.local/bashrc.d/*.{sh,bash})
+files=($HOME/.config/bashrc.d/*.{sh,bash})
 eval "$old_nullglob"
 unset -v old_nullglob
 

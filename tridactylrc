@@ -34,7 +34,6 @@ bind k scrollline -3
 
 " Comment toggler for Reddit and Hacker News
 bind ;c hint -Jc [class*="expand"],[class="togg"]
-bind ;u hint -Jc [class*="arrow"]
 
 unbind <F1>
 
@@ -61,9 +60,9 @@ bindurl reddit.com gu urlparent 3
 
 " Google hinting
 "#rso > div > .g > div > div > a
-bindurl www.google.c(om|a) f hint -Jc #rso > div > .g > div > div > a,#top_nav a
-bindurl www.google.c(om|a) F hint -Jtc #rso > div > .g > div > div > a,#top_nav a
-bindurl www.google.c(om|a) gF hint -Jqbc #rso > div > .g > div > div > a,#top_nav a
+bindurl www.google.c(om|a) f hint -Jc #rso .g div > a,#top_nav a
+bindurl www.google.c(om|a) F hint -Jtc #rso .g div > a,#top_nav a
+bindurl www.google.c(om|a) gF hint -Jqbc #rso .g div > a,#top_nav a
 
 " DuckDuckGo hinting
 bindurl duckduckgo.com f hint -Jc .result__a,.result__url__domain
@@ -122,6 +121,7 @@ bind ;C composite hint_focus; !s xdotool key Menu
 "
 " Aliases
 "
+autocmd DocStart newsboat.davidbuckley.ca mode ignore
 
 "
 " Autocmds

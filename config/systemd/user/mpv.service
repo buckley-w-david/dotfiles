@@ -5,7 +5,7 @@ After=multi-user.target
 
 [Service]
 ExecStartPre=/bin/sleep 30
-ExecStart=/usr/bin/mpv --vo=gpu --input-ipc-server='/tmp/mpvsocket' --idle --quiet --x11-name=mpvIdle --keep-open
+ExecStart=/usr/bin/mpv --vo=gpu --hwdec=vdpau --input-ipc-server='/tmp/mpvsocket' --idle --quiet --x11-name=mpvIdle --keep-open
 Restart=always
 RestartSec=12
 
