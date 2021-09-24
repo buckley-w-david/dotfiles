@@ -158,3 +158,113 @@ let g:haskell_enable_pattern_synonyms = 1 " to enable highlighting of `pattern`
 let g:haskell_enable_typeroles = 1        " to enable highlighting of type roles
 let g:haskell_enable_static_pointers = 1  " to enable highlighting of `static`
 let g:haskell_backpack = 1                " to enable highlighting of backpack keywords
+
+" TODO - My plugsin need an overhaul
+" This is my setup for work, it's a good base to build on
+" Probably don't need so much ruby in the personal config though
+" Plugins!
+"
+call plug#begin()
+
+" Weird thing, I forgot why I need it tbh
+" Plug 'neoclide/coc.nvim', {'branch': 'release'}
+"
+Plug 'dense-analysis/ale'
+
+" Opperate on surrounded text, things like "STUFF" and [1, 2, 3]
+Plug 'tpope/vim-surround'
+
+" User defined text objects
+Plug 'kana/vim-textobj-user'
+
+" Text object for ruby blocks
+Plug 'nelstrom/vim-textobj-rubyblock'
+
+" Split and join constructs using gJ and gS
+Plug 'AndrewRadev/splitjoin.vim'
+
+" Show git diff
+Plug 'airblade/vim-gitgutter'
+
+" Git commit graph viewer
+" :GV, :GV!, :GV?
+Plug 'tpope/vim-fugitive'
+Plug 'junegunn/gv.vim'
+
+" Run rubocop in vim
+" :RuboCop [-l, -a, etc]grpah
+" <Leader>ru
+" let g:vimrubocop_config = '/path/to/rubocop.yml'
+Plug 'ngmy/vim-rubocop'
+
+" See git diff in commit window as another pane
+Plug 'rhysd/committia.vim'
+
+" Expand visual selection regions with +, shrink with _
+Plug 'terryma/vim-expand-region'
+
+" Add syntax sugar to run shell commands
+" :Delete, :Move, :Rename, etc
+" Basically make it so I need to go into the directory tree less
+Plug 'tpope/vim-eunuch'
+
+" Allow . to repeat plugin commands
+Plug 'https://github.com/tpope/vim-repeat'
+
+" Autocompletion
+Plug 'roxma/vim-hug-neovim-rpc'
+Plug 'roxma/nvim-yarp'
+Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+
+" Commenting
+" gcc or gc
+Plug 'tpope/vim-commentary'
+
+" FZF
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+Plug 'junegunn/fzf.vim'
+
+call plug#end()
+"
+" Needed for vim-textobj-rubyblock
+runtime macros/matchit.vim
+
+
+"""""""""""""""""""""""""""
+"        rubocop          "
+"""""""""""""""""""""""""""
+nmap <Leader>rua :RuboCop -a<CR>
+
+
+"""""""""""""""""""""""""""
+"       deoplete          "
+"""""""""""""""""""""""""""
+let g:deoplete#enable_at_startup = 1
+" Use ALE an the completion sources for all code.
+call deoplete#custom#option('sources', {
+\ '_': ['ale'],
+\})
+
+"""""""""""""""""""""""""""
+"          ALE            "
+"""""""""""""""""""""""""""
+" Fixers
+let g:ale_fixers = {
+\   '*': ['remove_trailing_lines', 'trim_whitespace'],
+\   'ruby': ['rubocop'],
+\}
+let g:ale_fix_on_save = 1
+
+" Autocomplete
+" set omnifunc=ale#completion#OmniFunc
+let g:ale_completion_autoimport = 1
+
+" GOTO
+nnoremap <F12> :ALEGoToDefinition<CR>
+nnoremap <leader><F12> :ALEFindReferences<CR>
+
+" Hovering
+" g:ale_hover_to_preview = 1
+
+" Refactoring
+" :ALERename, ALECodeAction
