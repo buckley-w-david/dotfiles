@@ -1,6 +1,11 @@
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" General
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" General - Note this is actually an nvim config, I'm a bad person for calling
+" it .vimrc
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+" TODO: Should I remove the general config here that is handled by vim-sensible
+" TODO: I should probably go though this config in detail and make some
+" attempt at better organization. Maybe split into multiple files?
 
 " Use Vim settings, rather then Vi settings.
 set nocompatible
@@ -47,7 +52,6 @@ set incsearch
 set splitbelow
 set splitright
 
-
 syntax enable           " enable syntax processing
 syntax on           " enable syntax processing
 
@@ -87,115 +91,26 @@ color slate-with-skyblue-comments
 """"""""""""""""""""""""
 " Plugin Configuration "
 """"""""""""""""""""""""
-set rtp+=~/.vim/bundle/Vundle.vim
-call vundle#begin()
-Plugin 'VundleVim/Vundle.vim'
-" Status Bar
-Plugin 'vim-airline/vim-airline'
-Plugin 'editorconfig/editorconfig'
-" comment out stuff (gcc, gc)
-Plugin 'tpope/vim-commentary'
-" :Git
-Plugin 'tpope/vim-fugitive'
-Plugin 'tpope/vim-git'
-" Adds a new object based on indentation
-Plugin 'michaeljsmith/vim-indent-object'
-" Create your own text objects
-" Plugin 'kana/vim-textobj-user'
-Plugin 'tpope/vim-surround'
-" Allow plugin stuff to repeat
-Plugin 'tpope/vim-repeat'
-" Align text (Needed for vim-markdown)
-Plugin 'godlygeek/tabular'
-" Syntax highlighting, matching rules and mappings for Markdown
-Plugin 'plasticboy/vim-markdown'
-" Distinct highlighting of keywords vs values, JSON-specific (non-JS)
-" warnings, quote concealing.
-Plugin 'elzr/vim-json'
-" Asynchronous Lint Engine
-" Plugin 'w0rp/ale'
-" Plugin 'elixir-editors/vim-elixir'
-Plugin 'chrisbra/csv.vim'
-" Plugin 'plytophogy/vim-virtualenv'
-" Plugin 'mg979/vim-visual-multi'
-" Sensible defaults - I'm a noob
-Plugin 'tpope/vim-sensible'
-" Dispatch ... for async running of stuff
-Plugin 'tpope/vim-dispatch'
-" Plugin 'ambv/black'
-Plugin 'fatih/vim-go'
-" Plugin 'prettier/vim-prettier'
-" Plugin 'vim-scripts/st.vim'
-" Plugin 'francoiscabrol/ranger.vim'
-" Plugin 'xuhdev/vim-latex-live-preview'
-" Plugin 'dart-lang/dart-vim-plugin'
-" Plugin 'thosakwe/vim-flutter'
-Plugin 'neovimhaskell/haskell-vim.git'
-call vundle#end()
 
-" Ale
-" nmap <silent> <C-k> <Plug>(ale_previous_wrap)
-" nmap <silent> <C-j> <Plug>(ale_next_wrap)
-
-" vim-markdown
-let g:vim_markdown_folding_disabled = 1
-
-" editorconfig + vim-fugitive
-let g:EditorConfig_exclude_patterns = ['fugitive://.*']
-
-" vim-prettier
-" let g:prettier#config#single_quote = 'true'
-" let g:prettier#config#semi = 'false'
-
-" Flutter
-" call FlutterMenu()
-
-" haskell-vim
-let g:haskell_enable_quantification = 1   " to enable highlighting of `forall`
-let g:haskell_enable_recursivedo = 1      " to enable highlighting of `mdo` and `rec`
-let g:haskell_enable_arrowsyntax = 1      " to enable highlighting of `proc`
-let g:haskell_enable_pattern_synonyms = 1 " to enable highlighting of `pattern`
-let g:haskell_enable_typeroles = 1        " to enable highlighting of type roles
-let g:haskell_enable_static_pointers = 1  " to enable highlighting of `static`
-let g:haskell_backpack = 1                " to enable highlighting of backpack keywords
-
-" TODO - My plugsin need an overhaul
-" This is my setup for work, it's a good base to build on
-" Probably don't need so much ruby in the personal config though
-" Plugins!
-"
 call plug#begin()
 
-" Weird thing, I forgot why I need it tbh
-" Plug 'neoclide/coc.nvim', {'branch': 'release'}
-"
-Plug 'dense-analysis/ale'
+" Status Bar
+Plug 'vim-airline/vim-airline'
 
-" Opperate on surrounded text, things like "STUFF" and [1, 2, 3]
-Plug 'tpope/vim-surround'
+" comment out stuff (gcc, gc)
+Plug 'tpope/vim-commentary'
 
-" User defined text objects
-Plug 'kana/vim-textobj-user'
-
-" Text object for ruby blocks
-Plug 'nelstrom/vim-textobj-rubyblock'
-
-" Split and join constructs using gJ and gS
-Plug 'AndrewRadev/splitjoin.vim'
-
-" Show git diff
-Plug 'airblade/vim-gitgutter'
-
-" Git commit graph viewer
-" :GV, :GV!, :GV?
+" :Git
 Plug 'tpope/vim-fugitive'
-Plug 'junegunn/gv.vim'
+Plug 'tpope/vim-git'
 
-" Run rubocop in vim
-" :RuboCop [-l, -a, etc]grpah
-" <Leader>ru
-" let g:vimrubocop_config = '/path/to/rubocop.yml'
-Plug 'ngmy/vim-rubocop'
+" fzf - Fuzzy finding
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+Plug 'junegunn/fzf.vim'
+
+" Commit viewer
+" :GV, :GV!, :GV?
+Plug 'junegunn/gv.vim'
 
 " See git diff in commit window as another pane
 Plug 'rhysd/committia.vim'
@@ -203,38 +118,46 @@ Plug 'rhysd/committia.vim'
 " Expand visual selection regions with +, shrink with _
 Plug 'terryma/vim-expand-region'
 
+" Adds a new object based on indentation
+Plug 'michaeljsmith/vim-indent-object'
+
+" Create your own text objects
+" TODO Create some text objects?
+" Plug 'kana/vim-textobj-user'
+
+" Autocompletion
+Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+
+" Show git diff in the side gutter (+/-)
+Plug 'airblade/vim-gitgutter'
+
+"Split and join constructs using gJ and gS
+Plug 'AndrewRadev/splitjoin.vim'
+
+" Opperate on surrounded text
+Plug 'tpope/vim-surround'
+
+" Allow plugin stuff to repeat
+Plug 'tpope/vim-repeat'
+
 " Add syntax sugar to run shell commands
 " :Delete, :Move, :Rename, etc
 " Basically make it so I need to go into the directory tree less
 Plug 'tpope/vim-eunuch'
 
-" Allow . to repeat plugin commands
-Plug 'https://github.com/tpope/vim-repeat'
+" Asynchronous Lint Engine
+Plug 'dense-analysis/ale'
 
-" Autocompletion
-Plug 'roxma/vim-hug-neovim-rpc'
-Plug 'roxma/nvim-yarp'
-Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+" Sensible defaults
+Plug 'tpope/vim-sensible'
 
-" Commenting
-" gcc or gc
-Plug 'tpope/vim-commentary'
-
-" FZF
-Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
-Plug 'junegunn/fzf.vim'
+" Dispatch ... for async running of stuff
+" TODO actually get comfortable with using this
+Plug 'tpope/vim-dispatch'
 
 call plug#end()
-"
-" Needed for vim-textobj-rubyblock
-runtime macros/matchit.vim
 
-
-"""""""""""""""""""""""""""
-"        rubocop          "
-"""""""""""""""""""""""""""
-nmap <Leader>rua :RuboCop -a<CR>
-
+" Ale
 
 """""""""""""""""""""""""""
 "       deoplete          "
@@ -248,10 +171,18 @@ call deoplete#custom#option('sources', {
 """""""""""""""""""""""""""
 "          ALE            "
 """""""""""""""""""""""""""
+
+nmap <silent> <A-k> <Plug>(ale_previous_wrap)
+nmap <silent> <A-j> <Plug>(ale_next_wrap)
+
+" Detect whether the file is inside a poetry, and set the executable to `poetry` if true.
+let g:ale_python_auto_poetry = 1
+
 " Fixers
 let g:ale_fixers = {
 \   '*': ['remove_trailing_lines', 'trim_whitespace'],
 \   'ruby': ['rubocop'],
+\   'python': ['black'],
 \}
 let g:ale_fix_on_save = 1
 

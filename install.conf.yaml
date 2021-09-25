@@ -20,38 +20,42 @@
     ~/.xmobarrc0:
     ~/.xmobarrc1:
     ~/.xmonad.desktop:
-    ~/.xmonad/xmonad.hs: 
+    ~/.xmonad/xmonad.hs:
         create: true
         path: xmonad/xmonad.hs
-    ~/.xmonad/startup-hook: 
+    ~/.xmonad/startup-hook:
         create: true
         path: xmonad/startup-hook
-    ~/.xmonad/build: 
+    ~/.xmonad/build:
         create: true
         path: xmonad/build
-    ~/.xmonad/stack.yaml: 
+    ~/.xmonad/stack.yaml:
         create: true
         path: xmonad/stack.yaml
-    ~/.xmonad/my-xmonad.cabal: 
+    ~/.xmonad/my-xmonad.cabal:
         create: true
         path: xmonad/my-xmonad.cabal
-    ~/.config/termite: 
+    ~/.config/nvim:
+      glob: true
+      create: true
+      path: config/nvim/*
+    ~/.config/termite:
       glob: true
       create: true
       path: config/termite/*
-    ~/.config/kitty: 
+    ~/.config/kitty:
       glob: true
       create: true
       path: config/kitty/*
-    ~/.config/bashrc.d: 
+    ~/.config/bashrc.d:
       glob: true
       create: true
       path: config/bashrc.d/*.sh
-    ~/.config/bash_profile.d: 
+    ~/.config/bash_profile.d:
       glob: true
       create: true
       path: config/bash_profile.d/*.sh
-    ~/.config/profile.d: 
+    ~/.config/profile.d:
       glob: true
       create: true
       path: config/profile.d/*.sh
@@ -59,7 +63,7 @@
       glob: true
       create: true
       path: mutt/*
-    ~/scripts: 
+    ~/scripts:
       glob: true
       create: true
       path: scripts/*
@@ -71,13 +75,13 @@
       glob: true
       create: true
       path: vim/*
-    ~/.xmonad/lib: 
+    ~/.xmonad/lib:
       glob: true
       create: true
       path: xmonad/lib/*
 
 - shell:
   - [ git submodule update --init --recursive, Installing submodules ]
-  - 
+  -
     command: "find config/systemd/user -maxdepth 1 -type f -exec systemctl --user link {} \\;"
     description: link user systemd unit files
