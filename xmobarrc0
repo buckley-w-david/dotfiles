@@ -14,7 +14,7 @@ Config { font = "xft:Monospace:pixelsize=20"
        , sepChar = "%"
        , alignSep = "}{"
        , template = "%StdinReader% \
-                    \| <action=`xdg-open https://newsboat.davidbuckley.ca` button=1>Articles: %rss%</action> \
+                    \| <action=`kitty newsboat` button=1>Articles: %rss%</action> \
                     \| Updates: %pacman% \
                     \}{\
                     \ <action=`sed -i 's/mode:\s*off/\x0/g; s/mode:\s*one/mode:\t\toff/g; s/\x0/mode:\t\tone/g' ~/.xscreensaver` button=1>Screensaver: %screensaver%</action> \
