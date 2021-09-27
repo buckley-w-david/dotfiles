@@ -17,7 +17,7 @@ import XMonad.Actions.Warp              (banishScreen, Corner(LowerLeft))
     -- Hooks
 import XMonad.Hooks.DynamicLog          (dynamicLogWithPP, ppOutput, ppTitle, ppCurrent, ppVisible, ppHidden, ppHiddenNoWindows, ppSep, ppUrgent, ppExtras, ppOrder, xmobarPP, xmobarColor, shorten, wrap)
 import XMonad.Hooks.DynamicProperty     (dynamicPropertyChange)
-import XMonad.Hooks.EwmhDesktops        (ewmh, ewmhDesktopsEventHook, ewmhDesktopsStartup)
+import XMonad.Hooks.EwmhDesktops        (ewmh, ewmhDesktopsEventHook)
 import XMonad.Hooks.ManageHelpers       (isDialog, doCenterFloat, transience', doFullFloat)
 import XMonad.Hooks.ManageDocks         (avoidStruts, docks, ToggleStruts(..))
 
@@ -66,7 +66,7 @@ dynamicWorkspace = do
 dynamicWorkspaceAndSwitch :: X ()
 dynamicWorkspaceAndSwitch = do
     focusedWorkspaceName <- Utils.dynamicWorkspaceFromFocused
-    case focusedWorkspaceName of 
+    case focusedWorkspaceName of
                  Nothing -> return ()
                  Just n -> do
                      windows . greedyView $ n
@@ -92,7 +92,6 @@ windowCount = gets $ Just . show . length . integrate' . stack . workspace . cur
 ------------------------------------------------------------------------
 myStartupHook :: X ()
 myStartupHook = do
-    ewmhDesktopsStartup
     spawn "~/.xmonad/startup-hook"
 
 
@@ -103,7 +102,7 @@ myStartupHook = do
 -- with my CUSTOM_TYPE xprop gets moved to it's correct workspace. This is a measure to help prevent
 -- have to list all that various and sundry applications I'd like to move in my xmonad config file
 -- makeDynamicPropertyChange
-myWorkspaceNames = ["main", "main", "comms", "media", "dev1", "dev2", "dev3" ,"games", "games2"] 
+myWorkspaceNames = ["main", "main", "comms", "media", "dev1", "dev2", "dev3" ,"games", "games2"]
 myWorkspaces = map ( \(x, y) -> show (x::Int) ++ ":" ++ y) (zip [1..] myWorkspaceNames)
 -- myWorkspaceHooks = map makeDynamicPropertyChange myWorkspaces
 
@@ -111,7 +110,7 @@ myWorkspaces = map ( \(x, y) -> show (x::Int) ++ ":" ++ y) (zip [1..] myWorkspac
 ------------------------------------------------------------------------
 -- LAYOUTS
 ------------------------------------------------------------------------
-myLayoutHook = avoidStruts $ full ||| tall -- ||| grid ||| tab 
+myLayoutHook = avoidStruts $ full ||| tall -- ||| grid ||| tab
   where
    full = noBorders Full
    tall = smartBorders $ ResizableTall 1 (10/100) (1/2) []
@@ -123,8 +122,8 @@ myLayoutHook = avoidStruts $ full ||| tall -- ||| grid ||| tab
 myManageHook = manageSpawn <+> composeAll [ isDialog                       --> doCenterFloat
                                      -- , isFullscreen   --> doFullFloat
                                      , role      =? "pop-up"             --> doFloat
-                                     , title     =? "Hearthstone"        --> doFullFloat 
-                                     , title     =? "HearthstoneOverlay" --> doFloat 
+                                     , title     =? "Hearthstone"        --> doFullFloat
+                                     , title     =? "HearthstoneOverlay" --> doFloat
                                      -- , className =? "obsidian"           --> doShift "9:notes"
                                      , title     =? "Hearthstone"        --> doShift "9:games"
                                      , className =? "Steam"              --> doShift "8:games"
@@ -149,7 +148,7 @@ spotifyEventHook = dynamicPropertyChange "WM_NAME" (className =? "Spotify" --> d
 --elementEventHook = dynamicPropertyChange "WM_CLASS" (className =? "Element" --> defaultFloating) -- Having trouble getting Element to shift on start
 gameEventHook = dynamicPropertyChange "CUSTOM_TYPE" (stringProperty "CUSTOM_TYPE" =? "Game" --> doShift "7:games") -- I'd like to not have to explicitly list game stuff, and instead give them a custom xprop that we look for
 
-myEventHooks = handleEventHook def <+> spotifyEventHook <+> gameEventHook <+> ewmhDesktopsEventHook 
+myEventHooks = handleEventHook def <+> spotifyEventHook <+> gameEventHook <+> ewmhDesktopsEventHook
 
 
 ------------------------------------------------------------------------
@@ -229,13 +228,13 @@ myKeys = [ ("M-b"          , sendMessage ToggleStruts              ) -- toggle t
          -- , ("<XF86AudioNext>"         , spawn "/home/david/scripts/spotify/next")
          -- , ("<XF86AudioPrev>"         , spawn "/home/david/scripts/spotify/previous")
          -- , ("<XF86AudioStop>"         , spawn "/home/david/scripts/spotify/stop")
-         -- , ("<XF86AudioPlay>"         , spawn "/home/david/scripts/spotify/play-pause") 
+         -- , ("<XF86AudioPlay>"         , spawn "/home/david/scripts/spotify/play-pause")
          --
          -- This is me attempting to be more general with media commands
          , ("<XF86AudioNext>"         , spawn "playerctl next")
          , ("<XF86AudioPrev>"         , spawn "playerctl previous")
          , ("<XF86AudioStop>"         , spawn "playerctl stop")
-         , ("<XF86AudioPlay>"         , spawn "playerctl play-pause") 
+         , ("<XF86AudioPlay>"         , spawn "playerctl play-pause")
 
          -- Applications
          , ("<Print>"        , spawn "maim -s | xclip -selection clipboard -t image/png"                            ) -- Screenshot
@@ -246,7 +245,8 @@ myKeys = [ ("M-b"          , sendMessage ToggleStruts              ) -- toggle t
          , ("M-w"            , spawn "firefox-developer-edition"                              ) -- launch browser
          , ("M-e"            , spawn "rox"                                  ) -- launch file manager
          , ("M-z"            , spawn "/home/david/scripts/obsidian.sh"      ) -- note-taking app
-         , ("M-M1-r"          , spawn "/home/david/scripts/toggle-ruler"    ) -- Weird transparent overlay thing
+         , ("M-M1-r"         , spawn "/home/david/scripts/toggle-ruler"    ) -- Weird transparent overlay thing
+         , ("M-M1-c"         , spawn "/home/david/scripts/turbo"         ) -- turbo clicker
 
          -- Exiting
          , ("M-r"            , spawn "xmonad --recompile && xmonad --restart" ) -- restart xmonad
@@ -273,7 +273,7 @@ main = do
     , focusFollowsMouse = myFocusFollowsMouse
     , terminal          = myTerminal
     , startupHook = myStartupHook
-    , logHook = dynamicLogWithPP $ xmobarPP 
+    , logHook = dynamicLogWithPP $ xmobarPP
                     { ppOutput = \x -> hPutStrLn xmproc0 x  >> hPutStrLn xmproc1 x
                     , ppCurrent = xmobarColor "#c3e88d" "" . wrap "[" "]" -- Current workspace in xmobar
                     , ppTitle = xmobarColor "#d0d0d0" "" . shorten 60     -- Title of active window in xmobar
@@ -285,8 +285,8 @@ main = do
                     , ppExtras  = [windowCount]                           -- # of windows current workspace
                     , ppOrder  = \(ws:_:t:ex) -> [ws]++ex++[t]
                     }
-    , manageHook = myManageHook 
+    , manageHook = myManageHook
     , handleEventHook  = myEventHooks
     , layoutHook  = myLayoutHook
     , workspaces = myWorkspaces
-    } `additionalKeysP` myKeys     
+    } `additionalKeysP` myKeys

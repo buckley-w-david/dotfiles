@@ -125,6 +125,8 @@ Plug 'michaeljsmith/vim-indent-object'
 " TODO Create some text objects?
 " Plug 'kana/vim-textobj-user'
 
+Plug 'michaeljsmith/vim-indent-object'
+
 " Autocompletion
 Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
 
@@ -156,8 +158,6 @@ Plug 'tpope/vim-sensible'
 Plug 'tpope/vim-dispatch'
 
 call plug#end()
-
-" Ale
 
 """""""""""""""""""""""""""
 "       deoplete          "
@@ -199,3 +199,8 @@ nnoremap <leader><F12> :ALEFindReferences<CR>
 
 " Refactoring
 " :ALERename, ALECodeAction
+
+"""""""""""""""""""""""""""
+"          FZF            "
+"""""""""""""""""""""""""""
+nnoremap <silent> <C-p> :FZF<CR>
