@@ -7,5 +7,3 @@ set guioptions -=L  "remove left-hand scroll bar
 
 set guifont=iosevka
 colorscheme slate-with-skyblue-comments
-
-

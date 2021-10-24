@@ -1,43 +1,26 @@
 #!/bin/bash
 
-NSINKS=$(pactl list sinks short | wc -l)
-if [ "$NSINKS" -gt "1" ]; then
-    DEFAULT_SINK=$(pactl list sinks short | grep RUNNING | awk '{print $1}')
-fi
-
-if [ -z "$DEFAULT_SINK" ]; then
-    DEFAULT_SINK=$(pactl list sinks short | head -n 1 | awk '{print $1}')
-fi
-
-SINK=${3:-$DEFAULT_SINK}
-
-function current {
-    pactl list sinks | \
-        perl -000ne "if(/#$SINK/ && /State: RUNNING/){/(Volume:.*)/; print \"\$1\n\"}" | \
-        sed -e 's,.* \([0-9][0-9]*\)%.*,\1,'
-}
-
 op="$1"
 case $op in
     "up")
-    if [ "`current`" -lt "100" ]; then
-        pactl set-sink-mute $SINK false; pactl set-sink-volume $SINK +5%
+    if [ "`pamixer --get-volume`" -lt "100" ]; then
+        pamixer --increase 5
     fi
-    current
+    pamixer --get-volume
     ;;
     "down")
-    if [ "`current`" -gt "0" ]; then
-        pactl set-sink-mute $SINK false; pactl set-sink-volume $SINK -5%
+    if [ "`pamixer --get-volume`" -gt "0" ]; then
+        pamixer --decrease 5
     fi
-    current
+    pamixer --get-volume
     ;;
     "toggle")
-    pactl set-sink-mute $SINK toggle
+    pamixer --toggle-mute
     ;;
     "current")
-    current
+    pamixer --get-volume
     ;;
     "set")
-    pactl set-sink-mute $SINK false; pactl set-sink-volume $SINK $2
+    pamixer --set-volume "$2"
     ;;
 esac

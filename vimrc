@@ -15,7 +15,8 @@ scriptencoding utfs8
 set encoding=utf-8
 
 " Map our leader key to comma
-:let mapleader = ","
+let mapleader = ","
+noremap \ ,
 
 " Tired of your wrong shit
 " noremap <Left> :echoe "Use h"<CR>
@@ -26,9 +27,9 @@ set encoding=utf-8
 " Reload files if changed outside vim
 set autoread
 
-:set expandtab          " tabs to spaces
-:set tabstop=4          " visual spaces per tabs
-:set shiftwidth=4       " indentation is also 4 spaces
+set expandtab          " tabs to spaces
+set tabstop=4          " visual spaces per tabs
+set shiftwidth=4       " indentation is also 4 spaces
 
 set ruler               " turn on ruler
 set number              " add line numbers
@@ -74,6 +75,7 @@ vnoremap <c-k> :m '<-2<CR>gv=gv
 nnoremap ,p :pu<CR>
 
 set showcmd             " show the command
+set hidden " Hide a buffer when abandoning it instead of unloading it - This allows you to navigate away without having to save
 
 " Before writing the buffer in .py files
 " remove trailing whitespace
@@ -87,6 +89,12 @@ command Wq wq
 command GST terminal ++close gst % -
 
 color slate-with-skyblue-comments
+
+set exrc
+
+""""
+" Functions
+"""""
 
 """"""""""""""""""""""""
 " Plugin Configuration "
@@ -122,8 +130,8 @@ Plug 'terryma/vim-expand-region'
 Plug 'michaeljsmith/vim-indent-object'
 
 " Create your own text objects
-" TODO Create some text objects?
-" Plug 'kana/vim-textobj-user'
+Plug 'kana/vim-textobj-user'
+  Plug 'nelstrom/vim-textobj-rubyblock'
 
 Plug 'michaeljsmith/vim-indent-object'
 
@@ -157,6 +165,9 @@ Plug 'tpope/vim-sensible'
 " TODO actually get comfortable with using this
 Plug 'tpope/vim-dispatch'
 
+" Allow operating from the cursor to the beginning or end of text objects
+Plug 'tommcdo/vim-ninja-feet'
+
 call plug#end()
 
 """""""""""""""""""""""""""
@@ -183,8 +194,14 @@ let g:ale_fixers = {
 \   '*': ['remove_trailing_lines', 'trim_whitespace'],
 \   'ruby': ['rubocop'],
 \   'python': ['black'],
+\   'rust': ['rustfmt'],
 \}
 let g:ale_fix_on_save = 1
+
+" Linters
+" let g:ale_linters = {
+" \   'rust': ['analyzer'],
+" \}
 
 " Autocomplete
 " set omnifunc=ale#completion#OmniFunc
@@ -204,3 +221,8 @@ nnoremap <leader><F12> :ALEFindReferences<CR>
 "          FZF            "
 """""""""""""""""""""""""""
 nnoremap <silent> <C-p> :FZF<CR>
+
+"""""""""""""""""""""""""""
+"         End             "
+"""""""""""""""""""""""""""
+set secure
