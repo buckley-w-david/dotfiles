@@ -18,12 +18,6 @@ set encoding=utf-8
 let mapleader = ","
 noremap \ ,
 
-" Tired of your wrong shit
-" noremap <Left> :echoe "Use h"<CR>
-" nnoremap <Right> :echoe "Use l"<CR>
-" nnoremap <Up> :echoe "Use k"<CR>
-" nnoremap <Down> :echoe "Use j"<CR>
-
 " Reload files if changed outside vim
 set autoread
 
@@ -42,6 +36,10 @@ set showmatch           " highlight matching [{()}]
 
 " turn off search highlight
 nnoremap <leader><space> :nohlsearch<CR>
+
+" next/previous in arglist with wrapping
+nnoremap <silent> <leader>s :exe ( argidx() == argc() - 1 ? 'first' : 'next') <cr>
+nnoremap <silent> <leader>a :exe ( argidx() == 0 ? 'last' : 'previous') <cr>
 
 " Highlight search results
 set hlsearch
@@ -112,6 +110,9 @@ Plug 'tpope/vim-commentary'
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-git'
 
+" Git dif (+/-) in gutter
+Plug 'airblade/vim-gitgutter'
+
 " fzf - Fuzzy finding
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
@@ -120,50 +121,40 @@ Plug 'junegunn/fzf.vim'
 " :GV, :GV!, :GV?
 Plug 'junegunn/gv.vim'
 
+" Git stuff
+Plug 'tpope/vim-fugitive'
+
 " See git diff in commit window as another pane
 Plug 'rhysd/committia.vim'
 
 " Expand visual selection regions with +, shrink with _
 Plug 'terryma/vim-expand-region'
 
-" Adds a new object based on indentation
-Plug 'michaeljsmith/vim-indent-object'
-
 " Create your own text objects
 Plug 'kana/vim-textobj-user'
-  Plug 'nelstrom/vim-textobj-rubyblock'
+  Plug 'nelstrom/vim-textobj-rubyblock' " Text object for ruby blocks (r object)
+  Plug 'michaeljsmith/vim-indent-object' " Indent based text object (i object)
 
-Plug 'michaeljsmith/vim-indent-object'
-
-" Autocompletion
-" Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
-
-" Show git diff in the side gutter (+/-)
-Plug 'airblade/vim-gitgutter'
-
-"Split and join constructs using gJ and gS
+" Nicer split/join lines with gJ/gS
 Plug 'AndrewRadev/splitjoin.vim'
 
 " Opperate on surrounded text
 Plug 'tpope/vim-surround'
 
-" Allow plugin stuff to repeat
+" Repeat stuff (including plugin stuff)
 Plug 'tpope/vim-repeat'
+
+" Dispatch ... for async running of stuff
+" TODO actually get comfortable with using this
+Plug 'tpope/vim-dispatch'
 
 " Add syntax sugar to run shell commands
 " :Delete, :Move, :Rename, etc
 " Basically make it so I need to go into the directory tree less
 Plug 'tpope/vim-eunuch'
 
-" Asynchronous Lint Engine
-" Plug 'dense-analysis/ale'
-
 " Sensible defaults
 Plug 'tpope/vim-sensible'
-
-" Dispatch ... for async running of stuff
-" TODO actually get comfortable with using this
-Plug 'tpope/vim-dispatch'
 
 " Allow operating from the cursor to the beginning or end of text objects
 Plug 'tommcdo/vim-ninja-feet'
@@ -231,7 +222,7 @@ function! s:on_lsp_buffer_enabled() abort
 
     let g:lsp_format_sync_timeout = 1000
     autocmd! BufWritePre *.rs,*.go call execute('LspDocumentFormatSync')
-    
+
     " refer to doc to add more commands
 endfunction
 
@@ -245,6 +236,12 @@ augroup END
 "          FZF            "
 """""""""""""""""""""""""""
 nnoremap <silent> <C-p> :FZF<CR>
+let g:fzf_action = {
+\   'ctrl-t': 'tab split',
+\   'ctrl-x': 'split',
+\   'ctrl-v': 'vsplit',
+\   'ctrl-a': 'argedit',
+\}
 
 """""""""""""""""""""""""""
 "         End             "
