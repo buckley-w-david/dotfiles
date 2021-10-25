@@ -136,7 +136,7 @@ Plug 'kana/vim-textobj-user'
 Plug 'michaeljsmith/vim-indent-object'
 
 " Autocompletion
-Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+" Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
 
 " Show git diff in the side gutter (+/-)
 Plug 'airblade/vim-gitgutter'
@@ -156,7 +156,7 @@ Plug 'tpope/vim-repeat'
 Plug 'tpope/vim-eunuch'
 
 " Asynchronous Lint Engine
-Plug 'dense-analysis/ale'
+" Plug 'dense-analysis/ale'
 
 " Sensible defaults
 Plug 'tpope/vim-sensible'
@@ -168,54 +168,78 @@ Plug 'tpope/vim-dispatch'
 " Allow operating from the cursor to the beginning or end of text objects
 Plug 'tommcdo/vim-ninja-feet'
 
+Plug 'prabirshrestha/asyncomplete.vim'
+Plug 'prabirshrestha/vim-lsp'
+Plug 'prabirshrestha/asyncomplete-lsp.vim'
+
 call plug#end()
 
 """""""""""""""""""""""""""
-"       deoplete          "
+"  vim-lsp/autocomplete   "
 """""""""""""""""""""""""""
-let g:deoplete#enable_at_startup = 1
-" Use ALE an the completion sources for all code.
-call deoplete#custom#option('sources', {
-\ '_': ['ale'],
-\})
+imap <c-space> <Plug>(asyncomplete_force_refresh)
 
-"""""""""""""""""""""""""""
-"          ALE            "
-"""""""""""""""""""""""""""
+inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
+inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
+inoremap <expr> <cr>    pumvisible() ? asyncomplete#close_popup() : "\<cr>"
 
-nmap <silent> <A-k> <Plug>(ale_previous_wrap)
-nmap <silent> <A-j> <Plug>(ale_next_wrap)
+autocmd! CompleteDone * if pumvisible() == 0 | pclose | endif
 
-" Detect whether the file is inside a poetry, and set the executable to `poetry` if true.
-let g:ale_python_auto_poetry = 1
+if executable('pyls')
+    " pip install python-language-server
+    au User lsp_setup call lsp#register_server({
+        \ 'name': 'pyls',
+        \ 'cmd': {server_info->['pyls']},
+        \ 'allowlist': ['python'],
+        \ })
+endif
 
-" Fixers
-let g:ale_fixers = {
-\   '*': ['remove_trailing_lines', 'trim_whitespace'],
-\   'ruby': ['rubocop'],
-\   'python': ['black'],
-\   'rust': ['rustfmt'],
-\}
-let g:ale_fix_on_save = 1
+if executable('rust-analyzer')
+    au User lsp_setup call lsp#register_server({
+        \ 'name': 'rust-analyzer',
+        \ 'cmd': {server_info->['rust-analyzer']},
+        \ 'allowlist': ['rust'],
+        \ })
+endif
 
-" Linters
-" let g:ale_linters = {
-" \   'rust': ['analyzer'],
-" \}
+if executable('clangd')
+    au User lsp_setup call lsp#register_server({
+        \ 'name': 'clangd',
+        \ 'cmd': {server_info->['clangd']},
+        \ 'allowlist': ['c', 'cpp', 'objc', 'objcpp'],
+        \ })
+endif
 
-" Autocomplete
-" set omnifunc=ale#completion#OmniFunc
-let g:ale_completion_autoimport = 1
+function! s:on_lsp_buffer_enabled() abort
+    setlocal omnifunc=lsp#complete
+    setlocal signcolumn=yes
+    if exists('+tagfunc') | setlocal tagfunc=lsp#tagfunc | endif
+    nmap <buffer> <F12> <plug>(lsp-definition)
+    nmap <buffer> <leader><F12> <plug>(lsp-references)
+    nmap <buffer> <leader>rn <plug>(lsp-rename)
+    nmap <buffer> ga <plug>(lsp-code-action)
+    nmap <buffer> K <plug>(lsp-hover)
 
-" GOTO
-nnoremap <F12> :ALEGoToDefinition<CR>
-nnoremap <leader><F12> :ALEFindReferences<CR>
+    nmap <buffer> gs <plug>(lsp-document-symbol-search)
+    nmap <buffer> gS <plug>(lsp-workspace-symbol-search)
+    nmap <buffer> gi <plug>(lsp-implementation)
+    nmap <buffer> gt <plug>(lsp-type-definition)
+    nmap <buffer> [g <plug>(lsp-previous-diagnostic)
+    nmap <buffer> ]g <plug>(lsp-next-diagnostic)
+    inoremap <buffer> <expr><c-f> lsp#scroll(+4)
+    inoremap <buffer> <expr><c-d> lsp#scroll(-4)
 
-" Hovering
-" g:ale_hover_to_preview = 1
+    let g:lsp_format_sync_timeout = 1000
+    autocmd! BufWritePre *.rs,*.go call execute('LspDocumentFormatSync')
+    
+    " refer to doc to add more commands
+endfunction
 
-" Refactoring
-" :ALERename, ALECodeAction
+augroup lsp_install
+    au!
+    " call s:on_lsp_buffer_enabled only for languages that has the server registered.
+    autocmd User lsp_buffer_enabled call s:on_lsp_buffer_enabled()
+augroup END
 
 """""""""""""""""""""""""""
 "          FZF            "
