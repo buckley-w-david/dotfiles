@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+if [ ! -z "$SPIN" ]; then
+  exit 0
+fi
+
 set -e
 
 CONFIG="install.conf.yaml"
