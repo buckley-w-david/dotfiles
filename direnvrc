@@ -1,0 +1,25 @@
+# Usage: use ruby <version>
+#
+# Loads the specified ruby version into the environent
+#
+use_ruby() {
+  local ruby_dir=$HOME/.rubies/$1
+  load_prefix $ruby_dir
+  layout ruby
+}
+
+layout_poetry() {
+  local PATH_ORIG="$PWD"
+  local PROJECT_PATH="${1:-.}"
+  cd $PROJECT_PATH
+  if [[ ! -f pyproject.toml ]]; then
+    log_error 'No pyproject.toml found.  Use `poetry new` or `poetry init` to create one first.'
+    exit 2
+  fi
+
+  local VENV=$(dirname $(poetry run which python))
+  export VIRTUAL_ENV=`poetry env info -p`
+  export POETRY_ACTIVE=1
+  PATH_add "$VIRTUAL_ENV/bin"
+  cd $PATH_ORIG
+}

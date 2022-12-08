@@ -113,9 +113,16 @@ Plug 'tpope/vim-git'
 " Git dif (+/-) in gutter
 Plug 'airblade/vim-gitgutter'
 
-" fzf - Fuzzy finding
-Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
-Plug 'junegunn/fzf.vim'
+" Fuzzy finding
+Plug 'nvim-lua/plenary.nvim'
+Plug 'nvim-telescope/telescope.nvim'
+Plug 'nvim-telescope/telescope-fzf-native.nvim', { 'do': 'make' }
+Plug 'kyazdani42/nvim-web-devicons'
+
+Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}  " We recommend updating the parsers on update
+Plug 'nvim-treesitter/nvim-treesitter-textobjects'
+Plug 'nvim-treesitter/playground'
+
 
 " Commit viewer
 " :GV, :GV!, :GV?
@@ -159,89 +166,176 @@ Plug 'tpope/vim-sensible'
 " Allow operating from the cursor to the beginning or end of text objects
 Plug 'tommcdo/vim-ninja-feet'
 
-Plug 'prabirshrestha/asyncomplete.vim'
-Plug 'prabirshrestha/vim-lsp'
-Plug 'prabirshrestha/asyncomplete-lsp.vim'
+Plug 'neovim/nvim-lspconfig'
+Plug 'hrsh7th/nvim-cmp' " Autocompletion plugin
+Plug 'hrsh7th/cmp-nvim-lsp' " LSP source for nvim-cmp
+Plug 'kosayoda/nvim-lightbulb' " Show where code actions can happen
 
 call plug#end()
 
-"""""""""""""""""""""""""""
-"  vim-lsp/autocomplete   "
-"""""""""""""""""""""""""""
-imap <c-space> <Plug>(asyncomplete_force_refresh)
+lua << EOF
 
-inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
-inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
-inoremap <expr> <cr>    pumvisible() ? asyncomplete#close_popup() : "\<cr>"
+local map = vim.api.nvim_set_keymap
+local normal_opts = { noremap=true, silent=true }
 
-autocmd! CompleteDone * if pumvisible() == 0 | pclose | endif
+--
+--        nvim-treesitter
+--
 
-if executable('pyls')
-    " pip install python-language-server
-    au User lsp_setup call lsp#register_server({
-        \ 'name': 'pyls',
-        \ 'cmd': {server_info->['pyls']},
-        \ 'allowlist': ['python'],
-        \ })
-endif
+require'nvim-treesitter.configs'.setup {
+  ensure_installed = "maintained", -- one of "all", "maintained" (parsers with maintainers), or a list of languages
+  highlight = {
+    enable = true,              -- false will disable the whole extension
+    -- Setting this to true will run `:h syntax` and tree-sitter at the same time.
+    -- Set this to `true` if you depend on 'syntax' being enabled (like for indentation).
+    -- Using this option may slow down your editor, and you may see some duplicate highlights.
+    -- Instead of true it can also be a list of languages
+    additional_vim_regex_highlighting = false,
+  },
+  textobjects = {
+    select = {
+      enable = true,
 
-if executable('rust-analyzer')
-    au User lsp_setup call lsp#register_server({
-        \ 'name': 'rust-analyzer',
-        \ 'cmd': {server_info->['rust-analyzer']},
-        \ 'allowlist': ['rust'],
-        \ })
-endif
+      -- Automatically jump forward to textobj, similar to targets.vim 
+      lookahead = true,
 
-if executable('clangd')
-    au User lsp_setup call lsp#register_server({
-        \ 'name': 'clangd',
-        \ 'cmd': {server_info->['clangd']},
-        \ 'allowlist': ['c', 'cpp', 'objc', 'objcpp'],
-        \ })
-endif
+      keymaps = {
+        -- You can use the capture groups defined in textobjects.scm
+        ["af"] = "@function.outer",
+        ["if"] = "@function.inner",
+        ["ac"] = "@class.outer",
+        ["ic"] = "@class.inner",
+      },
+    },
+  },
+}
 
-function! s:on_lsp_buffer_enabled() abort
-    setlocal omnifunc=lsp#complete
-    setlocal signcolumn=yes
-    if exists('+tagfunc') | setlocal tagfunc=lsp#tagfunc | endif
-    nmap <buffer> <F12> <plug>(lsp-definition)
-    nmap <buffer> <leader><F12> <plug>(lsp-references)
-    nmap <buffer> <leader>rn <plug>(lsp-rename)
-    nmap <buffer> ga <plug>(lsp-code-action)
-    nmap <buffer> K <plug>(lsp-hover)
+--
+--        nvim-lsp           
+--
+local nvim_lsp = require('lspconfig')
 
-    nmap <buffer> gs <plug>(lsp-document-symbol-search)
-    nmap <buffer> gS <plug>(lsp-workspace-symbol-search)
-    nmap <buffer> gi <plug>(lsp-implementation)
-    nmap <buffer> gt <plug>(lsp-type-definition)
-    nmap <buffer> [g <plug>(lsp-previous-diagnostic)
-    nmap <buffer> ]g <plug>(lsp-next-diagnostic)
-    inoremap <buffer> <expr><c-f> lsp#scroll(+4)
-    inoremap <buffer> <expr><c-d> lsp#scroll(-4)
+-- Use an on_attach function to only map the following keys
+-- after the language server attaches to the current buffer
+local on_attach = function(client, bufnr)
+  local function buf_set_keymap(...) vim.api.nvim_buf_set_keymap(bufnr, ...) end
+  local function buf_set_option(...) vim.api.nvim_buf_set_option(bufnr, ...) end
 
-    let g:lsp_format_sync_timeout = 1000
-    autocmd! BufWritePre *.rs,*.go call execute('LspDocumentFormatSync')
+  -- Enable completion triggered by <c-x><c-o>
+  buf_set_option('omnifunc', 'v:lua.vim.lsp.omnifunc')
 
-    " refer to doc to add more commands
-endfunction
+  -- Mappings.
+  local opts = { noremap=true, silent=true }
 
-augroup lsp_install
-    au!
-    " call s:on_lsp_buffer_enabled only for languages that has the server registered.
-    autocmd User lsp_buffer_enabled call s:on_lsp_buffer_enabled()
-augroup END
+  -- See `:help vim.lsp.*` for documentation on any of the below functions
+  buf_set_keymap('n', 'gD', '<cmd>lua vim.lsp.buf.declaration()<CR>', opts)
+  buf_set_keymap('n', 'gd', '<cmd>lua require(\'telescope.builtin\').lsp_definitions()<cr>', opts)
+  buf_set_keymap('n', 'K', '<cmd>lua vim.lsp.buf.hover()<CR>', opts)
+  buf_set_keymap('n', 'gi', '<cmd>lua require(\'telescope.builtin\').lsp_implementations()<cr>', opts)
+  buf_set_keymap('n', '<C-k>', '<cmd>lua vim.lsp.buf.signature_help()<CR>', opts)
+  buf_set_keymap('n', '<leader>wa', '<cmd>lua vim.lsp.buf.add_workspace_folder()<CR>', opts)
+  buf_set_keymap('n', '<leader>wr', '<cmd>lua vim.lsp.buf.remove_workspace_folder()<CR>', opts)
+  buf_set_keymap('n', '<leader>wl', '<cmd>lua print(vim.inspect(vim.lsp.buf.list_workspace_folders()))<CR>', opts)
+  buf_set_keymap('n', '<leader>D', '<cmd>lua vim.lsp.buf.type_definition()<CR>', opts)
+  buf_set_keymap('n', '<leader>rn', '<cmd>lua vim.lsp.buf.rename()<CR>', opts)
+  buf_set_keymap('n', '<leader>ca', '<cmd>lua require(\'telescope.builtin\').lsp_code_actions()<cr>', opts)
+  buf_set_keymap('n', 'gr', '<cmd>lua require(\'telescope.builtin\').lsp_references()<cr>', opts)
+  buf_set_keymap('n', '<leader>e', '<cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<CR>', opts)
+  buf_set_keymap('n', '[d', '<cmd>lua vim.lsp.diagnostic.goto_prev()<CR>', opts)
+  buf_set_keymap('n', ']d', '<cmd>lua vim.lsp.diagnostic.goto_next()<CR>', opts)
+  buf_set_keymap('n', '<leader>q', '<cmd>lua vim.lsp.diagnostic.set_loclist()<CR>', opts)
+  buf_set_keymap('n', '<leader>f', '<cmd>lua vim.lsp.buf.formatting()<CR>', opts)
 
-"""""""""""""""""""""""""""
-"          FZF            "
-"""""""""""""""""""""""""""
-nnoremap <silent> <C-p> :FZF<CR>
-let g:fzf_action = {
-\   'ctrl-t': 'tab split',
-\   'ctrl-x': 'split',
-\   'ctrl-v': 'vsplit',
-\   'ctrl-a': 'argedit',
-\}
+end
+
+-- Add additional capabilities supported by nvim-cmp
+local capabilities = vim.lsp.protocol.make_client_capabilities()
+capabilities = require('cmp_nvim_lsp').update_capabilities(capabilities)
+
+-- Use a loop to conveniently call 'setup' on multiple servers and
+-- map buffer local keybindings when the language server attaches
+local servers = { 'pyright', 'rust_analyzer' }
+for _, lsp in ipairs(servers) do
+  nvim_lsp[lsp].setup {
+    on_attach = on_attach,
+    capabilities = capabilities,
+    flags = {
+      debounce_text_changes = 150,
+    }
+  }
+end
+
+
+-- Set completeopt to have a better completion experience
+vim.o.completeopt = 'menuone,noselect'
+
+-- nvim-cmp setup
+local cmp = require 'cmp'
+cmp.setup {
+  mapping = {
+    ['<C-p>'] = cmp.mapping.select_prev_item(),
+    ['<C-n>'] = cmp.mapping.select_next_item(),
+    ['<C-d>'] = cmp.mapping.scroll_docs(-4),
+    ['<C-f>'] = cmp.mapping.scroll_docs(4),
+    ['<C-Space>'] = cmp.mapping.complete(),
+    ['<C-e>'] = cmp.mapping.close(),
+    ['<CR>'] = cmp.mapping.confirm {
+      behavior = cmp.ConfirmBehavior.Replace,
+      select = true,
+    },
+    ['<Tab>'] = function(fallback)
+      if cmp.visible() then
+        cmp.select_next_item()
+      else
+        fallback()
+      end
+    end,
+    ['<S-Tab>'] = function(fallback)
+      if cmp.visible() then
+        cmp.select_prev_item()
+      else
+        fallback()
+      end
+    end,
+  },
+  sources = {
+    { name = 'nvim_lsp' },
+  },
+}
+
+
+-- require'lspconfig'.sorbet.setup{}
+--
+--       Telescope        
+--
+local telescope = require 'telescope'
+telescope.setup({
+  defaults = {
+    mappings = {
+      i = {
+        ["<C-h>"] = "which_key"
+      }
+    }
+  }
+})
+telescope.load_extension('fzf')
+
+map('n', 'ff', "<cmd>lua require('telescope.builtin').find_files()<cr>", normal_opts)
+map('n', 'fg', "<cmd>lua require('telescope.builtin').live_grep()<cr>", normal_opts)
+map('n', 'fb', "<cmd>lua require('telescope.builtin').buffers()<cr>", normal_opts)
+map('n', 'fh', "<cmd>lua require('telescope.builtin').help_tags()<cr>", normal_opts)
+map('n', 'fs', "<cmd>lua require('telescope.builtin').git_status()<cr>", normal_opts)
+
+EOF
+
+" nnoremap <silent> <C-p> :FZF<CR>
+" let g:fzf_action = {
+" \   'ctrl-t': 'tab split',
+" \   'ctrl-x': 'split',
+" \   'ctrl-v': 'vsplit',
+" \   'ctrl-a': 'argedit',
+" \}
+
 
 """""""""""""""""""""""""""
 "         End             "

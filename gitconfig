@@ -3,6 +3,7 @@
 	name = David Buckley
 [alias]
 	logtree = log --graph --oneline --decorate --all
+	is = ! git branch | fzf | xargs git switch
 [filter "lfs"]
 	clean = git-lfs clean -- %f
 	smudge = git-lfs smudge -- %f

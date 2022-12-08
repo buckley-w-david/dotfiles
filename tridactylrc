@@ -33,7 +33,7 @@ bind j scrollline +3
 bind k scrollline -3
 
 " Comment toggler for Reddit and Hacker News
-bind ;c hint -Jc [class*="expand"],[class="togg"]
+bind ;c hint -Jc [class*="expand"],[class*="togg"]
 
 unbind <F1>
 
