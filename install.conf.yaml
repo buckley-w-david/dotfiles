@@ -51,6 +51,10 @@
       glob: true
       create: true
       path: config/bashrc.d/*.sh
+    ~/.config/kmonad:
+      glob: true
+      create: true
+      path: config/kmonad/*
     ~/.config/bash_profile.d:
       glob: true
       create: true
